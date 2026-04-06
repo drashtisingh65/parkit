@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parkit – Smart Parking Uttar Pradesh</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* =============================================
+   PARKIT – Multi-City Smart Parking Platform
+   Uttar Pradesh Edition
+   Theme: Light Blue (#4da6ff) — unchanged
+   ============================================= */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --blue:#4da6ff;
+  --blue-light:#e8f4ff;
+  --blue-mid:#b3d9ff;
+  --blue-dark:#1a7fd4;
+  --blue-darker:#0f5fa8;
+  --white:#ffffff;
+  --bg:#f0f7ff;
+  --text:#1a1a2e;
+  --muted:#6b7a99;
+  --border:#c8dff5;
+  --card:#ffffff;
+  --success:#22c55e;
+  --warning:#f59e0b;
+  --danger:#ef4444;
+  --shadow:0 2px 16px rgba(26,127,212,0.08);
+  --shadow-lg:0 8px 32px rgba(26,127,212,0.18);
+}
+
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+h1,h2,h3,h4{font-family:'Plus Jakarta Sans',sans-serif}
+a{color:var(--blue-dark);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ======================== NAV ======================== */
+nav{
+  background:var(--white);
+  border-bottom:1.5px solid var(--border);
+  padding:0 1.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+  height:62px;position:sticky;top:0;z-index:100;
+  box-shadow:var(--shadow)
+}
+.logo{
+  display:flex;align-items:center;gap:8px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-weight:800;font-size:1.35rem;color:var(--blue-dark)
+}
+.logo-icon{
+  width:34px;height:34px;
+  background:linear-gradient(135deg,var(--blue-dark),var(--blue));
+  border-radius:9px;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:16px;font-weight:800
+}
+.nav-tabs{display:flex;gap:4px}
+.nav-tab{
+  padding:6px 15px;border-radius:20px;font-size:13px;font-weight:500;
+  cursor:pointer;border:none;background:transparent;color:var(--muted);transition:all 0.2s
+}
+.nav-tab.active,.nav-tab:hover{background:var(--blue-light);color:var(--blue-dark)}
+.nav-actions{display:flex;gap:8px;align-items:center}
+
+/* ======================== BUTTONS ======================== */
+.btn{
+  padding:8px 18px;border-radius:20px;font-size:13px;font-weight:600;
+  cursor:pointer;border:none;transition:all 0.2s;
+  font-family:'Plus Jakarta Sans',sans-serif
+}
+.btn-outline{background:transparent;border:1.5px solid var(--blue-dark);color:var(--blue-dark)}
+.btn-outline:hover{background:var(--blue-light)}
+.btn-primary{background:var(--blue-dark);color:#fff}
+.btn-primary:hover{background:var(--blue-darker);transform:translateY(-1px)}
+.btn-primary:disabled{opacity:0.45;cursor:not-allowed;transform:none}
+.btn-sm{padding:5px 13px;font-size:12px}
+.btn-success{background:var(--success);color:#fff}
+.btn-success:hover{filter:brightness(0.9)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger:hover{filter:brightness(0.9)}
+
+/* ======================== CITY SELECTOR BANNER ========================
+   This is the new multi-city selection component at the top of the hero.
+   City switcher is prominent, styled as a pill-shaped select with flag emoji.
+   ====================================================================== */
+.city-selector-bar{
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.25);
+  border-radius:50px;
+  padding:6px 16px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:1rem;
+  backdrop-filter:blur(4px);
+  cursor:pointer;
+  transition:background 0.2s
+}
+.city-selector-bar:hover{background:rgba(255,255,255,0.2)}
+.city-selector-label{font-size:12px;opacity:0.75;font-weight:500}
+.city-selector-value{font-size:14px;font-weight:700;letter-spacing:0.3px}
+.city-selector-arrow{opacity:0.8;font-size:12px}
+
+/* City dropdown panel */
+.city-dropdown-panel{
+  position:absolute;
+  top:calc(100% + 8px);
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:16px;
+  box-shadow:var(--shadow-lg);
+  padding:0.75rem;
+  min-width:320px;
+  z-index:500;
+  animation:fadeIn 0.2s ease
+}
+.city-dropdown-search{
+  width:100%;padding:8px 12px;
+  border:1.5px solid var(--border);border-radius:10px;
+  font-size:14px;font-family:'DM Sans',sans-serif;
+  background:var(--bg);color:var(--text);outline:none;
+  margin-bottom:8px;
+  transition:border 0.2s
+}
+.city-dropdown-search:focus{border-color:var(--blue-dark)}
+.city-dropdown-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4px;
+  max-height:240px;
+  overflow-y:auto
+}
+.city-option{
+  padding:8px 12px;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:13px;font-weight:500;
+  display:flex;align-items:center;gap:6px;
+  transition:background 0.15s;
+  color:var(--text)
+}
+.city-option:hover{background:var(--blue-light);color:var(--blue-dark)}
+.city-option.selected{background:var(--blue-dark);color:#fff}
+.city-option-pop{font-size:10px;opacity:0.65;margin-left:auto}
+
+/* ======================== HERO ======================== */
+.hero{
+  background:linear-gradient(135deg,var(--blue-darker) 0%,var(--blue-dark) 45%,var(--blue) 100%);
+  padding:2.5rem 1.5rem 2rem;text-align:center;color:#fff;
+  position:relative
+}
+.hero-city-wrapper{
+  position:relative;
+  display:inline-block;
+  margin-bottom:0.25rem
+}
+.hero h1{font-size:2.3rem;font-weight:800;margin-bottom:0.4rem;line-height:1.2}
+.hero-city-name{
+  color:#ffe066;
+  position:relative
+}
+.hero p{font-size:1rem;opacity:0.9;margin-bottom:1.5rem}
+.search-bar{
+  background:#fff;border-radius:50px;padding:6px;
+  display:flex;max-width:640px;margin:0 auto;
+  box-shadow:0 8px 30px rgba(0,0,0,0.15)
+}
+.search-bar input{
+  flex:1;border:none;outline:none;padding:8px 16px;
+  font-size:14px;font-family:'DM Sans',sans-serif;
+  background:transparent;color:var(--text)
+}
+.search-bar select{
+  border:none;outline:none;padding:8px 12px;font-size:14px;
+  background:transparent;color:var(--muted);
+  font-family:'DM Sans',sans-serif;cursor:pointer
+}
+
+/* ======================== STATS BAR ======================== */
+.stats-bar{display:flex;gap:0;background:var(--white);border-bottom:1px solid var(--border)}
+.stat-item{flex:1;padding:1rem;text-align:center;border-right:1px solid var(--border)}
+.stat-item:last-child{border-right:none}
+.stat-num{font-size:1.45rem;font-weight:800;color:var(--blue-dark);font-family:'Plus Jakarta Sans',sans-serif}
+.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px}
+
+/* City stat badge */
+.city-stat-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  background:var(--blue-light);color:var(--blue-dark);
+  border-radius:20px;padding:3px 10px;
+  font-size:11px;font-weight:600;margin-bottom:0.4rem
+}
+
+/* ======================== CHIPS ======================== */
+.area-chips{
+  padding:1rem 1.5rem;display:flex;gap:8px;flex-wrap:wrap;
+  background:var(--white);border-bottom:1px solid var(--border)
+}
+.chip{
+  padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;
+  cursor:pointer;border:1.5px solid var(--border);color:var(--muted);
+  background:var(--white);transition:all 0.2s
+}
+.chip.active,.chip:hover{background:var(--blue-light);color:var(--blue-dark);border-color:var(--blue-mid)}
+
+/* ======================== PARKING GRID ======================== */
+.section{padding:1.5rem}
+.section-title{font-size:1rem;font-weight:700;margin-bottom:1rem;color:var(--text)}
+.parking-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+.parking-card{
+  background:var(--card);border-radius:16px;border:1.5px solid var(--border);
+  overflow:hidden;cursor:pointer;transition:all 0.2s;box-shadow:var(--shadow);
+  animation:fadeIn 0.3s ease both
+}
+.parking-card:hover{border-color:var(--blue-mid);box-shadow:var(--shadow-lg);transform:translateY(-3px)}
+.card-img{
+  height:120px;
+  background:linear-gradient(135deg,var(--blue-light),var(--blue-mid));
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.5rem;position:relative
+}
+.card-badge{position:absolute;top:10px;right:10px;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.badge-available{background:#dcfce7;color:#166534}
+.badge-full{background:#fee2e2;color:#991b1b}
+.badge-limited{background:#fef3c7;color:#92400e}
+.card-body{padding:1rem}
+.card-name{font-weight:700;font-size:0.95rem;margin-bottom:3px}
+.card-area{font-size:12px;color:var(--muted);margin-bottom:8px}
+.card-meta{display:flex;justify-content:space-between;align-items:center}
+.card-price{font-weight:700;color:var(--blue-dark);font-size:1rem}
+.slot-bar{height:6px;background:var(--blue-light);border-radius:3px;margin:8px 0;overflow:hidden}
+.slot-fill{height:100%;background:var(--blue-dark);border-radius:3px;transition:width 0.5s}
+.slot-info{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+
+/* ======================== MODAL ======================== */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(15,40,80,0.55);
+  z-index:200;display:flex;align-items:center;
+  justify-content:center;padding:1rem
+}
+.modal{
+  background:var(--white);border-radius:20px;width:100%;
+  max-width:560px;max-height:92vh;overflow-y:auto;
+  box-shadow:0 20px 60px rgba(15,40,80,0.25);
+  animation:modalPop 0.25s ease
+}
+.modal-header{
+  padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+  position:sticky;top:0;background:var(--white);z-index:1
+}
+.modal-header h3{font-size:1.1rem;font-weight:700}
+.close-btn{
+  width:30px;height:30px;border-radius:50%;
+  background:var(--blue-light);border:none;cursor:pointer;
+  color:var(--blue-dark);font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+  transition:background 0.2s
+}
+.close-btn:hover{background:var(--blue-mid)}
+.modal-body{padding:1.5rem}
+
+/* ======================== DETAIL ======================== */
+.detail-hero{
+  background:linear-gradient(135deg,var(--blue-light),var(--blue-mid));
+  border-radius:12px;padding:1.5rem;margin-bottom:1.25rem;text-align:center
+}
+.detail-hero h2{font-size:1.2rem;font-weight:800}
+.detail-hero p{font-size:12px;color:var(--muted);margin-top:3px}
+.detail-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1.25rem}
+.dstat{background:var(--bg);border-radius:10px;padding:0.75rem;text-align:center;border:1px solid var(--border)}
+.dstat-val{font-size:1.3rem;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif}
+.dstat-val.green{color:var(--success)}
+.dstat-val.blue{color:var(--blue-dark)}
+.dstat-val.red{color:var(--danger)}
+.dstat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase}
+
+/* ======================== SLOT GRID ========================
+   Grid layout is now fully inline/dynamic based on total slot count.
+   .slot-grid class kept for legacy compat but layout uses inline styles.
+   .slot-box sizes are also set inline; these are just base defaults.
+   ============================================================ */
+.slot-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin:0.75rem 0}
+.slot-box{
+  border-radius:6px;border:1.5px solid;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:600;cursor:pointer;
+  transition:all 0.15s;
+  user-select:none;
+  flex-shrink:0
+}
+.slot-box.available{border-color:#22c55e;background:#f0fdf4;color:#166534}
+.slot-box.available:hover{background:#dcfce7;transform:scale(1.08)}
+.slot-box.booked{
+  border-color:var(--blue-dark);
+  background:var(--blue-light);
+  color:var(--blue-dark);
+  cursor:not-allowed;
+  opacity:0.85
+}
+.slot-box.selected{
+  border-color:var(--blue-dark);
+  background:var(--blue-dark);
+  color:#fff;
+  transform:scale(1.08);
+  box-shadow:0 2px 8px rgba(26,127,212,0.4)
+}
+
+/* ======================== LEGEND ======================== */
+.legend-dot{
+  width:13px;height:13px;border-radius:3px;
+  display:inline-block;border:1.5px solid
+}
+
+/* ======================== FORM ======================== */
+.form-group{margin-bottom:1rem}
+.form-label{
+  font-size:12px;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:6px;display:block
+}
+.form-input{
+  width:100%;padding:10px 14px;
+  border:1.5px solid var(--border);border-radius:10px;
+  font-size:14px;font-family:'DM Sans',sans-serif;
+  background:var(--white);color:var(--text);outline:none;
+  transition:border 0.2s
+}
+.form-input:focus{border-color:var(--blue-dark);box-shadow:0 0 0 3px rgba(77,166,255,0.15)}
+.form-input.error{border-color:var(--danger) !important;background:#fff8f8}
+.form-input.valid{border-color:var(--success)}
+.field-error{
+  font-size:11.5px;color:var(--danger);margin-top:4px;
+  display:none;font-weight:500
+}
+.field-error.show{display:block}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ======================== PAYMENT ======================== */
+.payment-summary{
+  background:var(--blue-light);border-radius:12px;
+  padding:1rem;margin:1rem 0;border:1px solid var(--blue-mid)
+}
+.pay-row{display:flex;justify-content:space-between;font-size:13px;padding:3px 0}
+.pay-total{
+  border-top:1px solid var(--blue-mid);margin-top:6px;
+  padding-top:6px;font-weight:700;font-size:1rem
+}
+.razorpay-btn{
+  width:100%;padding:13px;background:#002B68;color:#fff;
+  border:none;border-radius:12px;font-size:14px;font-weight:700;
+  cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:10px;transition:all 0.2s
+}
+.razorpay-btn:hover{background:#001a40;transform:translateY(-1px)}
+.razorpay-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+
+/* ======================== SUCCESS ======================== */
+.success-screen{text-align:center;padding:1.5rem}
+.success-icon{
+  width:72px;height:72px;background:#dcfce7;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 1rem;font-size:2rem;
+  animation:bounceIn 0.5s ease
+}
+.ticket{
+  background:var(--bg);border:1.5px dashed var(--blue-mid);
+  border-radius:12px;padding:1.25rem;margin:1rem 0;text-align:left
+}
+.ticket-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px}
+.ticket-row span:first-child{color:var(--muted)}
+.ticket-row span:last-child{font-weight:600}
+.ticket-id{text-align:center;font-size:11px;color:var(--muted);margin-top:8px}
+
+/* ======================== AUTH ======================== */
+.auth-tabs{
+  display:flex;border:1.5px solid var(--border);
+  border-radius:10px;overflow:hidden;margin-bottom:1.25rem
+}
+.auth-tab{
+  flex:1;padding:8px;text-align:center;font-size:13px;font-weight:600;
+  cursor:pointer;background:var(--white);border:none;color:var(--muted);transition:all 0.2s
+}
+.auth-tab.active{background:var(--blue-dark);color:#fff}
+
+/* ======================== ADMIN ======================== */
+.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+.admin-card{background:var(--card);border-radius:14px;border:1.5px solid var(--border);padding:1.25rem}
+.admin-card h4{
+  font-size:13px;font-weight:600;margin-bottom:0.75rem;
+  color:var(--muted);text-transform:uppercase;letter-spacing:0.5px
+}
+.bookings-table{width:100%;border-collapse:collapse;font-size:12px}
+.bookings-table th{
+  background:var(--blue-light);color:var(--blue-dark);
+  padding:8px 10px;text-align:left;font-weight:600;font-size:11px
+}
+.bookings-table td{padding:8px 10px;border-bottom:1px solid var(--border)}
+.bookings-table tr:hover td{background:var(--bg)}
+.status-badge{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600}
+.status-active{background:#dcfce7;color:#166534}
+.status-pending{background:#fef3c7;color:#92400e}
+.status-cancelled{background:#fee2e2;color:#991b1b}
+
+/* Admin city filter */
+.admin-city-filter{
+  display:flex;align-items:center;gap:8px;
+  padding:0.75rem 1.5rem;
+  background:var(--white);border-bottom:1px solid var(--border);
+  font-size:13px;color:var(--muted)
+}
+.admin-city-select{
+  padding:5px 10px;border:1.5px solid var(--border);
+  border-radius:8px;font-size:13px;
+  font-family:'DM Sans',sans-serif;outline:none;
+  background:var(--white);color:var(--text);cursor:pointer
+}
+.admin-city-select:focus{border-color:var(--blue-dark)}
+
+/* ======================== MY BOOKINGS ======================== */
+.history-item{
+  background:var(--card);border-radius:12px;border:1.5px solid var(--border);
+  padding:1rem;margin-bottom:0.75rem;display:flex;justify-content:space-between;align-items:center
+}
+.history-main{flex:1}
+.history-name{font-weight:700;font-size:14px}
+.history-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.history-price{font-weight:700;color:var(--blue-dark)}
+
+/* ======================== MISC ======================== */
+.empty{text-align:center;padding:3rem 1rem;color:var(--muted)}
+.empty-icon{font-size:3rem;margin-bottom:0.75rem}
+.step-indicator{display:flex;align-items:center;margin-bottom:1.25rem}
+.step{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
+.step-num{
+  width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700
+}
+.step.done .step-num{background:var(--success);color:#fff}
+.step.active .step-num{background:var(--blue-dark);color:#fff}
+.step.pending .step-num{background:var(--border);color:var(--muted)}
+.step.done{color:var(--success)}
+.step.active{color:var(--blue-dark)}
+.step.pending{color:var(--muted)}
+.step-line{flex:1;height:2px;background:var(--border);margin:0 6px}
+.step-line.done{background:var(--success)}
+
+/* ======================== TOAST ======================== */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:#1a1a2e;color:#fff;
+  padding:12px 20px;border-radius:12px;
+  font-size:13px;font-weight:500;z-index:999;
+  box-shadow:0 8px 24px rgba(0,0,0,0.2);
+  animation:slideUp 0.3s ease;
+  max-width:320px
+}
+.toast.success{background:#166534}
+.toast.error{background:#991b1b}
+
+/* ======================== ANIMATIONS ======================== */
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes modalPop{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+@keyframes bounceIn{
+  0%{transform:scale(0.5);opacity:0}
+  70%{transform:scale(1.1)}
+  100%{transform:scale(1);opacity:1}
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite}
+
+/* ======================== RESPONSIVE ======================== */
+@media(max-width:480px){
+  .parking-grid{grid-template-columns:1fr}
+  .hero h1{font-size:1.6rem}
+  .stat-item{padding:0.6rem}
+  .stat-num{font-size:1.1rem}
+  .admin-grid{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .city-dropdown-grid{grid-template-columns:1fr}
+  .nav-tabs{display:none}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* =====================================================
+   PARKIT — Multi-City Smart Parking Platform
+   Uttar Pradesh Edition
+   
+   Architecture:
+   - CITY_DB: master data store keyed by city slug
+   - state.city: currently selected city slug
+   - state.parkingData: live copy of selected city's parking data
+   - City switch → loadCity(slug) → re-derives state.parkingData
+   ===================================================== */
+
+const API_BASE = 'http://localhost:3001/api';
+
+// ======================================================
+// CITY DATABASE
+// Each city has: name, emoji, population label, areas[], parkingLocations[]
+// parkingLocations use same schema as original PARKING_DATA
+// ======================================================
+const CITY_DB = {
+
+  lucknow: {
+    name: 'Lucknow', emoji: '🏛️', pop: '3.7M', tagline: 'The City of Nawabs',
+    areas: ['All','Gomti Nagar','Hazratganj','Alambagh','Indira Nagar','Charbagh','Chowk','Aminabad','Kaiserbagh','Mahanagar','Aliganj','Vibhuti Khand','Faizabad Road'],
+    parking: [
+      {id:101,name:'Wave Mall Parking',area:'Gomti Nagar',address:'Vibhuti Khand, Gomti Nagar',total:120,booked:78,price:30,rating:4.5,emoji:'🏬'},
+      {id:102,name:'Phoenix Palassio Parking',area:'Gomti Nagar',address:'Sultanpur Rd, Gomti Nagar Ext.',total:200,booked:145,price:40,rating:4.6,emoji:'🛍️'},
+      {id:103,name:'Fun Republic Parking',area:'Gomti Nagar',address:'Gomti Nagar Main Road',total:80,booked:20,price:25,rating:4.2,emoji:'🎭'},
+      {id:104,name:'Sahara Ganj Parking',area:'Hazratganj',address:'Sahara Ganj Mall, Hazratganj',total:150,booked:150,price:35,rating:4.0,emoji:'🏪'},
+      {id:105,name:'Hazratganj Market Parking',area:'Hazratganj',address:'MG Road, Hazratganj',total:60,booked:38,price:20,rating:3.9,emoji:'🛒'},
+      {id:106,name:'Janpath Parking Complex',area:'Hazratganj',address:'Janpath, Hazratganj',total:90,booked:54,price:25,rating:4.1,emoji:'🏛️'},
+      {id:107,name:'Alambagh Bus Stand Parking',area:'Alambagh',address:'Alambagh Bus Terminal',total:100,booked:82,price:15,rating:3.7,emoji:'🚌'},
+      {id:108,name:'Alambagh Metro Parking',area:'Alambagh',address:'Metro Station, Alambagh',total:200,booked:110,price:20,rating:4.3,emoji:'🚇'},
+      {id:109,name:'Charbagh Station Parking',area:'Charbagh',address:'Charbagh Railway Station',total:300,booked:240,price:25,rating:4.2,emoji:'🚂'},
+      {id:110,name:'Charbagh Metro Parking',area:'Charbagh',address:'Charbagh Metro Station',total:150,booked:90,price:20,rating:4.1,emoji:'🚇'},
+      {id:111,name:'Chowk Heritage Parking',area:'Chowk',address:'Akbari Gate, Chowk',total:60,booked:50,price:15,rating:3.6,emoji:'🕌'},
+      {id:112,name:'Aminabad Market Lot A',area:'Aminabad',address:'Pratap Market, Aminabad',total:50,booked:30,price:10,rating:3.8,emoji:'🛒'},
+      {id:113,name:'Kaiserbagh Palace Parking',area:'Kaiserbagh',address:'Kaiserbagh Palace Complex',total:90,booked:55,price:20,rating:4.1,emoji:'🏯'},
+      {id:114,name:'Aliganj Metro Parking',area:'Aliganj',address:'Aliganj Metro Station',total:180,booked:100,price:20,rating:4.2,emoji:'🚇'},
+      {id:115,name:'Vibhuti Khand IT Park Parking',area:'Vibhuti Khand',address:'Vibhuti Khand IT Park',total:250,booked:180,price:35,rating:4.5,emoji:'💻'},
+      {id:116,name:'Lulu Mall Parking',area:'Faizabad Road',address:'Lulu Mall, Faizabad Road',total:400,booked:280,price:40,rating:4.7,emoji:'🛍️'},
+      {id:117,name:'SGPGI Hospital Parking',area:'Faizabad Road',address:'SGPGI Campus, Raebareli Rd',total:500,booked:320,price:10,rating:4.0,emoji:'🏥'},
+      {id:118,name:'Indira Nagar Market Parking',area:'Indira Nagar',address:'D-Block Market, Indira Nagar',total:50,booked:35,price:15,rating:3.9,emoji:'🛍️'},
+      {id:119,name:'Eldeco City Centre Parking',area:'Indira Nagar',address:'Sector B, Indira Nagar',total:110,booked:60,price:30,rating:4.4,emoji:'🏙️'},
+      {id:120,name:'Mahanagar Extension Parking',area:'Mahanagar',address:'Mahanagar Extension Road',total:70,booked:20,price:20,rating:4.0,emoji:'🏘️'},
+    ]
+  },
+
+  kanpur: {
+    name: 'Kanpur', emoji: '🏭', pop: '3.1M', tagline: 'The Industrial Hub',
+    areas: ['All','Civil Lines','Swaroop Nagar','Kakadeo','Arya Nagar','Kidwai Nagar','Rawatpur','Mall Road','GT Road'],
+    parking: [
+      {id:201,name:'Z Square Mall Parking',area:'Civil Lines',address:'The Mall, Civil Lines',total:250,booked:160,price:30,rating:4.3,emoji:'🛍️'},
+      {id:202,name:'Kanpur Central Station Parking',area:'Civil Lines',address:'Railway Station Road, Civil Lines',total:300,booked:220,price:20,rating:4.0,emoji:'🚂'},
+      {id:203,name:'Rave Moti Mall Parking',area:'Swaroop Nagar',address:'GT Road, Swaroop Nagar',total:180,booked:90,price:25,rating:4.2,emoji:'🏬'},
+      {id:204,name:'Kakadeo Market Lot',area:'Kakadeo',address:'Main Market, Kakadeo',total:80,booked:55,price:15,rating:3.8,emoji:'🛒'},
+      {id:205,name:'Arya Nagar Commercial Parking',area:'Arya Nagar',address:'Arya Nagar Chauraha',total:70,booked:40,price:15,rating:3.7,emoji:'🏪'},
+      {id:206,name:'Kidwai Nagar Sector Parking',area:'Kidwai Nagar',address:'Sector 12, Kidwai Nagar',total:100,booked:70,price:20,rating:4.0,emoji:'🚗'},
+      {id:207,name:'IIT Kanpur Gate Parking',area:'GT Road',address:'IIT Kanpur Campus, GT Road',total:200,booked:50,price:10,rating:4.5,emoji:'🎓'},
+      {id:208,name:'Rawatpur Bus Terminal Parking',area:'Rawatpur',address:'Bus Terminal, Rawatpur',total:150,booked:100,price:15,rating:3.6,emoji:'🚌'},
+      {id:209,name:'Mall Road Parking Complex',area:'Mall Road',address:'Mall Road, Kanpur City',total:120,booked:80,price:25,rating:4.1,emoji:'🏛️'},
+      {id:210,name:'Phool Bagh Parking',area:'Civil Lines',address:'Phool Bagh, Civil Lines',total:60,booked:30,price:20,rating:4.2,emoji:'🌸'},
+    ]
+  },
+
+  varanasi: {
+    name: 'Varanasi', emoji: '🕉️', pop: '1.4M', tagline: 'The Spiritual Capital',
+    areas: ['All','Godaulia','Lanka','Sigra','Lahurabir','Shivpur','BHU Campus','Sarnath','Assi Ghat'],
+    parking: [
+      {id:301,name:'Godaulia Ghat Parking',area:'Godaulia',address:'Dashashwamedh Ghat Road',total:80,booked:72,price:20,rating:3.8,emoji:'⛵'},
+      {id:302,name:'Lanka Gate BHU Parking',area:'BHU Campus',address:'Lanka Gate, BHU Campus',total:200,booked:80,price:10,rating:4.3,emoji:'🎓'},
+      {id:303,name:'Sigra Market Parking',area:'Sigra',address:'Sigra Chauraha, Varanasi',total:100,booked:60,price:20,rating:3.9,emoji:'🏪'},
+      {id:304,name:'Sarnath Heritage Parking',area:'Sarnath',address:'Sarnath Deer Park Road',total:120,booked:45,price:15,rating:4.4,emoji:'🦌'},
+      {id:305,name:'Varanasi Junction Parking',area:'Lahurabir',address:'Varanasi Junction, Station Road',total:350,booked:280,price:25,rating:4.1,emoji:'🚂'},
+      {id:306,name:'Assi Ghat Parking',area:'Assi Ghat',address:'Assi Ghat Road',total:60,booked:50,price:15,rating:3.7,emoji:'🌅'},
+      {id:307,name:'Shivpur Commercial Lot',area:'Shivpur',address:'Shivpur Bypass Road',total:90,booked:35,price:15,rating:3.9,emoji:'🏘️'},
+      {id:308,name:'Lahurabir Market Parking',area:'Lahurabir',address:'Lahurabir Crossing, Varanasi',total:70,booked:55,price:15,rating:3.6,emoji:'🛒'},
+      {id:309,name:'Hotel Taj Gateway Parking',area:'Godaulia',address:'Nadesar Palace Road',total:100,booked:40,price:40,rating:4.6,emoji:'🏨'},
+      {id:310,name:'BHU Hospital Parking',area:'BHU Campus',address:'Sir Sundar Lal Hospital, BHU',total:200,booked:150,price:10,rating:4.0,emoji:'🏥'},
+    ]
+  },
+
+  prayagraj: {
+    name: 'Prayagraj', emoji: '🏺', pop: '1.2M', tagline: 'The Sangam City',
+    areas: ['All','Civil Lines','Allenganj','George Town','Mumfordganj','Naini','Kaushambi','Teliyarganj','Zero Road'],
+    parking: [
+      {id:401,name:'Civil Lines Central Parking',area:'Civil Lines',address:'MG Marg, Civil Lines',total:150,booked:90,price:25,rating:4.2,emoji:'🏛️'},
+      {id:402,name:'Prayagraj Junction Parking',area:'George Town',address:'Railway Station Road, George Town',total:300,booked:250,price:20,rating:4.0,emoji:'🚂'},
+      {id:403,name:'Triveni Sangam Parking',area:'George Town',address:'Sangam Nose, Prayagraj',total:200,booked:120,price:15,rating:4.3,emoji:'🌊'},
+      {id:404,name:'Allenganj Market Parking',area:'Allenganj',address:'Main Market, Allenganj',total:80,booked:50,price:20,rating:3.9,emoji:'🛒'},
+      {id:405,name:'Naini Industrial Parking',area:'Naini',address:'Industrial Area, Naini',total:120,booked:40,price:15,rating:3.7,emoji:'🏭'},
+      {id:406,name:'Mumfordganj Commercial Lot',area:'Mumfordganj',address:'Stanley Road, Mumfordganj',total:70,booked:45,price:20,rating:4.0,emoji:'🏪'},
+      {id:407,name:'Zero Road Market Parking',area:'Zero Road',address:'Zero Road Crossing',total:60,booked:40,price:15,rating:3.8,emoji:'🛍️'},
+      {id:408,name:'Kaushambi Mall Parking',area:'Kaushambi',address:'Kaushambi, Prayagraj',total:180,booked:110,price:30,rating:4.4,emoji:'🏬'},
+      {id:409,name:'Allahabad HC Parking',area:'Civil Lines',address:'High Court Road, Civil Lines',total:100,booked:60,price:20,rating:4.1,emoji:'⚖️'},
+      {id:410,name:'Teliyarganj Hospital Lot',area:'Teliyarganj',address:'District Hospital, Teliyarganj',total:80,booked:55,price:10,rating:3.8,emoji:'🏥'},
+    ]
+  },
+
+  agra: {
+    name: 'Agra', emoji: '🕌', pop: '1.7M', tagline: 'City of the Taj Mahal',
+    areas: ['All','Taj Ganj','Sadar Bazar','Sikandra','Fatehabad Road','Kamla Nagar','Dayal Bagh','Trans Yamuna','Bodla'],
+    parking: [
+      {id:501,name:'Taj Mahal East Gate Parking',area:'Taj Ganj',address:'Taj East Gate Road, Taj Ganj',total:500,booked:380,price:50,rating:4.5,emoji:'🕌'},
+      {id:502,name:'Fatehabad Road Hotel Parking',area:'Fatehabad Road',address:'Fatehabad Road Strip',total:200,booked:120,price:40,rating:4.3,emoji:'🏨'},
+      {id:503,name:'Agra Cantonment Parking',area:'Sadar Bazar',address:'Cantt Station Road',total:250,booked:180,price:25,rating:4.0,emoji:'🚂'},
+      {id:504,name:'Sadar Bazar Market Parking',area:'Sadar Bazar',address:'Sadar Bazar Main Road',total:100,booked:70,price:20,rating:3.8,emoji:'🛒'},
+      {id:505,name:'Sikandra Complex Parking',area:'Sikandra',address:'Akbar Tomb Road, Sikandra',total:150,booked:60,price:30,rating:4.4,emoji:'🏯'},
+      {id:506,name:'Kamla Nagar Parking',area:'Kamla Nagar',address:'Kamla Nagar Market',total:80,booked:45,price:20,rating:3.9,emoji:'🏪'},
+      {id:507,name:'Dayal Bagh Temple Parking',area:'Dayal Bagh',address:'Dayal Bagh Colony',total:120,booked:40,price:15,rating:4.2,emoji:'🏛️'},
+      {id:508,name:'Bodla Industrial Parking',area:'Bodla',address:'Industrial Area, Bodla',total:90,booked:30,price:10,rating:3.7,emoji:'🏭'},
+    ]
+  },
+
+  noida: {
+    name: 'Noida', emoji: '🏙️', pop: '0.9M', tagline: 'The IT & Corporate Hub',
+    areas: ['All','Sector 18','Sector 62','Sector 63','Sector 15','Sector 44','Film City','Greater Noida','Sector 104'],
+    parking: [
+      {id:601,name:'DLF Mall of India Parking',area:'Sector 18',address:'DLF Mall, Sector 18',total:800,booked:550,price:50,rating:4.6,emoji:'🏬'},
+      {id:602,name:'The Great India Place Parking',area:'Sector 38A',address:'GIP Mall, Sector 38A',total:600,booked:400,price:40,rating:4.5,emoji:'🛍️'},
+      {id:603,name:'Sector 18 Metro Parking',area:'Sector 18',address:'Noida Sector 18 Metro Station',total:300,booked:200,price:20,rating:4.3,emoji:'🚇'},
+      {id:604,name:'Sector 62 IT Hub Parking',area:'Sector 62',address:'IT Park, Sector 62',total:400,booked:250,price:35,rating:4.4,emoji:'💻'},
+      {id:605,name:'Sector 63 Industrial Parking',area:'Sector 63',address:'Industrial Area, Sector 63',total:200,booked:120,price:25,rating:4.0,emoji:'🏭'},
+      {id:606,name:'Film City Gate Parking',area:'Film City',address:'Film City, Sector 16A',total:350,booked:200,price:30,rating:4.2,emoji:'🎬'},
+      {id:607,name:'Greater Noida Expo Mart',area:'Greater Noida',address:'Expo Mart, Greater Noida',total:1000,booked:200,price:40,rating:4.5,emoji:'🏛️'},
+      {id:608,name:'Sector 15 Market Parking',area:'Sector 15',address:'Market, Sector 15',total:100,booked:70,price:20,rating:3.9,emoji:'🛒'},
+      {id:609,name:'Sector 44 District Centre',area:'Sector 44',address:'District Centre, Sector 44',total:200,booked:130,price:30,rating:4.1,emoji:'🏢'},
+      {id:610,name:'Sector 104 Society Parking',area:'Sector 104',address:'Residential Sector 104',total:150,booked:80,price:20,rating:4.0,emoji:'🏘️'},
+    ]
+  },
+
+  ghaziabad: {
+    name: 'Ghaziabad', emoji: '🏗️', pop: '1.7M', tagline: 'Gateway to UP',
+    areas: ['All','Vaishali','Indirapuram','Raj Nagar','Mohan Nagar','Kaushambi','Lal Kuan','Crossings Republik'],
+    parking: [
+      {id:701,name:'Shipra Mall Parking',area:'Indirapuram',address:'Shipra Mall, Indirapuram',total:400,booked:280,price:40,rating:4.4,emoji:'🛍️'},
+      {id:702,name:'Pacific Mall Parking',area:'Kaushambi',address:'Pacific Mall, Kaushambi',total:350,booked:200,price:35,rating:4.3,emoji:'🏬'},
+      {id:703,name:'Vaishali Metro Parking',area:'Vaishali',address:'Vaishali Metro Station',total:300,booked:180,price:20,rating:4.2,emoji:'🚇'},
+      {id:704,name:'Raj Nagar Extension Parking',area:'Raj Nagar',address:'Raj Nagar Extension, Gzb',total:200,booked:120,price:25,rating:4.0,emoji:'🏘️'},
+      {id:705,name:'Mohan Nagar Market Lot',area:'Mohan Nagar',address:'Mohan Nagar Market',total:100,booked:65,price:15,rating:3.8,emoji:'🛒'},
+      {id:706,name:'Ghaziabad Junction Parking',area:'Lal Kuan',address:'Ghaziabad Railway Station',total:250,booked:200,price:20,rating:3.9,emoji:'🚂'},
+      {id:707,name:'Crossings Republik Mall',area:'Crossings Republik',address:'Crossings Republik Township',total:300,booked:150,price:30,rating:4.3,emoji:'🏙️'},
+      {id:708,name:'Indirapuram Habitat Centre',area:'Indirapuram',address:'Habitat Centre, Indirapuram',total:180,booked:100,price:30,rating:4.1,emoji:'🏢'},
+    ]
+  },
+
+  meerut: {
+    name: 'Meerut', emoji: '⚔️', pop: '1.5M', tagline: 'The City of Scissors & Sports',
+    areas: ['All','Shastri Nagar','Ganga Nagar','Pallavpuram','Surajkund','Begum Bridge','Hapur Road','Medical College Road'],
+    parking: [
+      {id:801,name:'Shastri Nagar Central Parking',area:'Shastri Nagar',address:'Main Market, Shastri Nagar',total:120,booked:80,price:20,rating:4.0,emoji:'🏪'},
+      {id:802,name:'Meerut Cantt Parking',area:'Ganga Nagar',address:'Cantonment Area, Meerut',total:200,booked:100,price:25,rating:4.2,emoji:'🏛️'},
+      {id:803,name:'Hapur Road Commercial Lot',area:'Hapur Road',address:'Hapur Road Industrial Area',total:100,booked:60,price:15,rating:3.8,emoji:'🏭'},
+      {id:804,name:'Pallavpuram Market Parking',area:'Pallavpuram',address:'Pallavpuram Township',total:80,booked:45,price:15,rating:3.9,emoji:'🏘️'},
+      {id:805,name:'Medical College Parking',area:'Medical College Road',address:'LLRM Medical College',total:150,booked:110,price:10,rating:3.7,emoji:'🏥'},
+      {id:806,name:'Surajkund Park Parking',area:'Surajkund',address:'Surajkund Road, Meerut',total:100,booked:35,price:15,rating:4.1,emoji:'🌳'},
+    ]
+  },
+
+  mathura: {
+    name: 'Mathura', emoji: '🦚', pop: '0.5M', tagline: 'Birthplace of Lord Krishna',
+    areas: ['All','Vrindavan','Krishna Nagar','Masani','Civil Lines','Dampier Nagar','Govardhan'],
+    parking: [
+      {id:901,name:'ISKCON Temple Parking',area:'Vrindavan',address:'ISKCON Mandir Road, Vrindavan',total:300,booked:220,price:20,rating:4.5,emoji:'🛕'},
+      {id:902,name:'Krishna Janmabhoomi Parking',area:'Krishna Nagar',address:'Temple Road, Mathura',total:400,booked:350,price:25,rating:4.3,emoji:'🙏'},
+      {id:903,name:'Mathura Junction Parking',area:'Civil Lines',address:'Railway Station, Mathura',total:200,booked:150,price:20,rating:3.9,emoji:'🚂'},
+      {id:904,name:'Holi Gate Market Parking',area:'Dampier Nagar',address:'Holi Gate Road',total:80,booked:60,price:15,rating:3.7,emoji:'🎨'},
+      {id:905,name:'Govardhan Parikarma Parking',area:'Govardhan',address:'Govardhan Hill, Mathura',total:250,booked:100,price:15,rating:4.4,emoji:'⛰️'},
+    ]
+  },
+
+  aligarh: {
+    name: 'Aligarh', emoji: '🔒', pop: '0.9M', tagline: 'The Lock City',
+    areas: ['All','Civil Lines','Ramghat Road','Marris Road','Quarsi','Jamalpur','AMU Campus'],
+    parking: [
+      {id:1001,name:'AMU Gate Parking',area:'AMU Campus',address:'AMU Gate No. 1, Aligarh',total:300,booked:150,price:10,rating:4.3,emoji:'🎓'},
+      {id:1002,name:'City Centre Mall Parking',area:'Civil Lines',address:'Civil Lines, Aligarh',total:200,booked:130,price:25,rating:4.1,emoji:'🏬'},
+      {id:1003,name:'Aligarh Junction Parking',area:'Marris Road',address:'Railway Station, Aligarh',total:250,booked:180,price:20,rating:3.9,emoji:'🚂'},
+      {id:1004,name:'Ramghat Road Parking',area:'Ramghat Road',address:'Ram Ghat, Aligarh',total:80,booked:40,price:15,rating:3.8,emoji:'🌊'},
+      {id:1005,name:'Quarsi Commercial Lot',area:'Quarsi',address:'Quarsi, Aligarh',total:70,booked:35,price:15,rating:3.7,emoji:'🏪'},
+    ]
+  }
+};
+
+// ======================================================
+// AREAS helper — returns area list for current city
+// ======================================================
+function getCityAreas() {
+  return CITY_DB[state.city]?.areas || ['All'];
+}
+
+// ======================================================
+// LOAD CITY — switch city, rebuild parkingData & bookedSlotsMap
+// This is the core of the multi-city logic:
+// 1. Deep-clone selected city's parking array into state.parkingData
+// 2. Rebuild bookedSlotsMap for accurate slot-level tracking
+// 3. Reset area filter to 'All' and clear search
+// ======================================================
+function loadCity(slug) {
+  if (!CITY_DB[slug]) return;
+  state.city = slug;
+  state.area = 'All';
+  state.search = '';
+  state.modal = null;
+  state.modalStep = 1;
+  state.selectedSlot = null;
+  state.parkingData = JSON.parse(JSON.stringify(CITY_DB[slug].parking));
+
+  // Rebuild bookedSlotsMap for new city
+  Object.keys(bookedSlotsMap).forEach(k => delete bookedSlotsMap[k]);
+  state.parkingData.forEach(p => {
+    const set = new Set();
+    for (let i = 1; i <= p.booked && i <= p.total; i++) set.add(i);
+    bookedSlotsMap[p.id] = set;
+  });
+
+  state.showCityDropdown = false;
+  render();
+  showToast(`Switched to ${CITY_DB[slug].name} 📍`, 'success');
+}
+
+// ======================================================
+// BOOKED SLOTS MAP — persists across modal open/close
+// Keyed by parking ID (unique across all cities since IDs are per-city ranges)
+// ======================================================
+const bookedSlotsMap = {};
+
+// ======================================================
+// APP STATE
+// ======================================================
+let state = {
+  page: 'home',
+  city: 'lucknow',          // Currently selected city slug
+  citySearch: '',            // Search query inside city dropdown
+  showCityDropdown: false,   // Controls city selector panel visibility
+  area: 'All',
+  search: '',
+  modal: null,
+  modalStep: 1,
+  selectedSlot: null,
+  bookingData: { name:'', phone:'', email:'', date:'', time:'', duration:1 },
+  user: null,
+  bookings: [],
+  authMode: 'login',
+  parkingData: [],           // Live data for current city (mutable copy)
+  confirmation: null,
+  formErrors: {},
+  adminCity: 'all'           // Admin panel city filter
+};
+
+// Initial city load
+(function initCity() {
+  state.parkingData = JSON.parse(JSON.stringify(CITY_DB[state.city].parking));
+  state.parkingData.forEach(p => {
+    const set = new Set();
+    for (let i = 1; i <= p.booked && i <= p.total; i++) set.add(i);
+    bookedSlotsMap[p.id] = set;
+  });
+})();
+
+// ======================================================
+// VALIDATORS
+// ======================================================
+const VALIDATORS = {
+  name:     v => v.trim().length >= 2,
+  phone:    v => /^[6-9]\d{9}$/.test(v.trim()),
+  email:    v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()),
+  password: v => v.length >= 6
+};
+
+// ======================================================
+// UTILITY FUNCTIONS
+// ======================================================
+function getAvailable(p)  { return p.total - p.booked; }
+function getStatus(p) {
+  const pct = p.booked / p.total;
+  if (pct >= 1)   return { label: 'Full',      cls: 'badge-full' };
+  if (pct >= 0.8) return { label: 'Limited',   cls: 'badge-limited' };
+  return               { label: 'Available', cls: 'badge-available' };
+}
+function formatINR(n) { return '₹' + n.toLocaleString('en-IN'); }
+function genId()      { return 'PKT' + Math.random().toString(36).substr(2,6).toUpperCase(); }
+
+/** Generate slot visualization for a parking location — ALL slots, no cap */
+function genSlots(p) {
+  const bookedSet = bookedSlotsMap[p.id] || new Set();
+  const slots = [];
+  for (let i = 1; i <= p.total; i++) {
+    slots.push({ id: i, booked: bookedSet.has(i) });
+  }
+  return slots;
+}
+
+/**
+ * Pick grid columns + box size based on total slot count.
+ * Small lots  (≤ 50):   10 cols, 36px boxes — spacious, readable
+ * Medium lots (≤ 150):  12 cols, 32px boxes
+ * Large lots  (≤ 400):  15 cols, 28px boxes
+ * Huge lots   (> 400):  20 cols, 22px boxes — compact but still tappable
+ */
+function slotGridStyle(total) {
+  if (total <= 50)  return { cols: 10, size: '36px', font: '10px' };
+  if (total <= 150) return { cols: 12, size: '32px', font: '9px'  };
+  if (total <= 400) return { cols: 15, size: '28px', font: '8px'  };
+  return                   { cols: 20, size: '22px', font: '7px'  };
+}
+
+// ======================================================
+// RENDER ENGINE
+// ======================================================
+function render() {
+  document.getElementById('app').innerHTML = buildApp();
+  attachEvents();
+}
+
+function buildApp() {
+  return `
+    ${buildNav()}
+    ${state.page === 'home'     ? buildHome()       : ''}
+    ${state.page === 'bookings' ? buildMyBookings() : ''}
+    ${state.page === 'admin'    ? buildAdmin()      : ''}
+    ${state.page === 'auth'     ? buildAuth()       : ''}
+    ${state.modal               ? buildModal()      : ''}
+  `;
+}
+
+// ======================================================
+// NAV BAR
+// ======================================================
+function buildNav() {
+  return `<nav>
+    <div class="logo">
+      <div class="logo-icon">P</div>
+      Parkit
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab ${state.page==='home'?'active':''}" onclick="goPage('home')">Find Parking</button>
+      ${state.user ? `<button class="nav-tab ${state.page==='bookings'?'active':''}" onclick="goPage('bookings')">My Bookings</button>` : ''}
+      ${state.user?.isAdmin ? `<button class="nav-tab ${state.page==='admin'?'active':''}" onclick="goPage('admin')">Admin</button>` : ''}
+    </div>
+    <div class="nav-actions">
+      ${state.user ? `
+        <span style="font-size:13px;color:var(--muted)">Hi, ${state.user.name.split(' ')[0]} 👋</span>
+        <button class="btn btn-outline btn-sm" onclick="logout()">Logout</button>
+      ` : `
+        <button class="btn btn-outline btn-sm" onclick="goPage('auth')">Login</button>
+        <button class="btn btn-primary btn-sm" onclick="goPage('auth')">Sign Up</button>
+      `}
+    </div>
+  </nav>`;
+}
+
+// ======================================================
+// HOME PAGE
+// ======================================================
+function buildHome() {
+  /* Filter parking for current city based on area chip + search text */
+  const filtered = state.parkingData.filter(p => {
+    const areaMatch   = state.area === 'All' || p.area === state.area;
+    const searchMatch = !state.search ||
+      p.name.toLowerCase().includes(state.search.toLowerCase()) ||
+      p.area.toLowerCase().includes(state.search.toLowerCase());
+    return areaMatch && searchMatch;
+  });
+
+  const totalSlots  = state.parkingData.reduce((a, p) => a + p.total, 0);
+  const totalAvail  = state.parkingData.reduce((a, p) => a + getAvailable(p), 0);
+  const totalBooked = state.parkingData.reduce((a, p) => a + p.booked, 0);
+
+  const city   = CITY_DB[state.city];
+  const areas  = getCityAreas();
+
+  /* City dropdown filtered list */
+  const cityKeys = Object.keys(CITY_DB);
+  const filteredCities = cityKeys.filter(k =>
+    CITY_DB[k].name.toLowerCase().includes((state.citySearch || '').toLowerCase())
+  );
+
+  return `
+    <!-- ===== HERO with City Selector ===== -->
+    <div class="hero">
+      <!-- City Selector Component
+           Click toggles the dropdown panel. Selected city drives all data. -->
+      <div class="hero-city-wrapper">
+        <div class="city-selector-bar" onclick="toggleCityDropdown()">
+          <span>${city.emoji}</span>
+          <span class="city-selector-label">Showing parking in</span>
+          <span class="city-selector-value">${city.name}</span>
+          <span class="city-selector-arrow">${state.showCityDropdown ? '▲' : '▼'}</span>
+        </div>
+
+        <!-- City dropdown panel — shown/hidden based on state.showCityDropdown -->
+        ${state.showCityDropdown ? `
+        <div class="city-dropdown-panel">
+          <!-- Search within cities -->
+          <input
+            class="city-dropdown-search"
+            placeholder="🔍 Search city..."
+            value="${state.citySearch || ''}"
+            oninput="updateCitySearch(this.value)"
+            autofocus>
+          <div class="city-dropdown-grid">
+            ${filteredCities.map(k => `
+              <div class="city-option ${state.city === k ? 'selected' : ''}" onclick="switchCity('${k}')">
+                <span>${CITY_DB[k].emoji}</span>
+                <span>${CITY_DB[k].name}</span>
+                <span class="city-option-pop">${CITY_DB[k].pop}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        ` : ''}
+      </div>
+
+      <h1>🅿️ Smart Parking in <span class="hero-city-name">${city.name}</span></h1>
+      <p>${city.tagline} — Find, book and pay for parking instantly</p>
+
+      <!-- Search bar — filters by name or area within current city -->
+      <div class="search-bar">
+        <span style="padding:8px 8px 8px 16px;font-size:16px">🔍</span>
+        <input
+          placeholder="Search by name or area in ${city.name}..."
+          value="${state.search}"
+          oninput="searchChange(this.value)">
+        <select onchange="areaChange(this.value)">
+          ${areas.map(a => `<option value="${a}" ${state.area===a?'selected':''}>${a}</option>`).join('')}
+        </select>
+        <button class="btn btn-primary" style="margin:4px;white-space:nowrap">Search</button>
+      </div>
+    </div>
+
+    <!-- ===== Stats Bar — computed from current city's data ===== -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="city-stat-badge">${city.emoji} ${city.name}</div>
+        <div class="stat-num">${state.parkingData.length}</div>
+        <div class="stat-label">Locations</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">${totalSlots.toLocaleString()}</div>
+        <div class="stat-label">Total Slots</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" style="color:var(--success)">${totalAvail.toLocaleString()}</div>
+        <div class="stat-label">Available</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" style="color:var(--danger)">${totalBooked.toLocaleString()}</div>
+        <div class="stat-label">Occupied</div>
+      </div>
+    </div>
+
+    <!-- ===== Area Filter Chips — per-city areas ===== -->
+    <div class="area-chips">
+      ${areas.map(a => `<div class="chip ${state.area===a?'active':''}" onclick="areaChange('${a}')">${a}</div>`).join('')}
+    </div>
+
+    <!-- ===== Parking Cards Grid ===== -->
+    <div class="section">
+      <div class="section-title">
+        ${filtered.length} Parking Location${filtered.length!==1?'s':''} 
+        ${state.area!=='All' ? 'in '+state.area : 'across '+city.name}
+      </div>
+      ${filtered.length === 0 ? `
+        <div class="empty">
+          <div class="empty-icon">🔍</div>
+          <p>No parking found. Try a different area or search term.</p>
+        </div>
+      ` : ''}
+      <div class="parking-grid">
+        ${filtered.map(p => buildParkingCard(p)).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ======================================================
+// PARKING CARD
+// ======================================================
+function buildParkingCard(p) {
+  const avail  = getAvailable(p);
+  const status = getStatus(p);
+  const pct    = Math.round((p.booked / p.total) * 100);
+  return `
+    <div class="parking-card" onclick="openModal(${p.id})">
+      <div class="card-img">${p.emoji}
+        <span class="card-badge ${status.cls}">${status.label}</span>
+      </div>
+      <div class="card-body">
+        <div class="card-name">${p.name}</div>
+        <div class="card-area">📍 ${p.area} · ${p.address.substring(0, 35)}...</div>
+        <div class="slot-bar"><div class="slot-fill" style="width:${pct}%"></div></div>
+        <div class="slot-info">
+          <span style="color:var(--success)">✓ ${avail} available</span>
+          <span>${pct}% filled</span>
+        </div>
+        <div class="card-meta" style="margin-top:8px">
+          <span class="card-price">${formatINR(p.price)}/hr</span>
+          <span style="font-size:11px;color:var(--muted)">⭐ ${p.rating} · ${p.total} slots</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ======================================================
+// MODAL — BOOKING FLOW (5 Steps)
+// ======================================================
+function buildModal() {
+  const p = state.parkingData.find(x => x.id === state.modal);
+  if (!p) return '';
+
+  const slots  = genSlots(p);
+  const avail  = getAvailable(p);
+  const bd     = state.bookingData;
+  const hours  = bd.duration || 1;
+  const amount = p.price * hours;
+  const gst    = Math.round(amount * 0.18);
+  const total  = amount + gst + 5;
+  const s      = state.modalStep;
+  const steps  = ['Details', 'Select Slot', 'Book', 'Pay', 'Confirm'];
+
+  return `
+  <div class="modal-overlay" onclick="closeModalOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>${p.name}</h3>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      ${s < 5 ? `
+      <div class="step-indicator">
+        ${steps.map((st, i) => `
+          <div class="step ${i+1<s?'done':i+1===s?'active':'pending'}">
+            <div class="step-num">${i+1<s?'✓':i+1}</div>
+            <span style="display:${window.innerWidth>400?'block':'none'}">${st}</span>
+          </div>
+          ${i < steps.length - 1 ? `<div class="step-line ${i+1<s?'done':''}"></div>` : ''}
+        `).join('')}
+      </div>` : ''}
+
+      <!-- STEP 1: Details -->
+      ${s === 1 ? `
+        <div class="detail-hero">
+          <div style="font-size:2.5rem">${p.emoji}</div>
+          <h2>${p.name}</h2>
+          <p>📍 ${p.address}</p>
+          <p style="margin-top:4px">⭐ ${p.rating} rating · ${formatINR(p.price)}/hour</p>
+        </div>
+        <div class="detail-stats">
+          <div class="dstat"><div class="dstat-val green">${avail}</div><div class="dstat-lbl">Available</div></div>
+          <div class="dstat"><div class="dstat-val red">${p.booked}</div><div class="dstat-lbl">Occupied</div></div>
+          <div class="dstat"><div class="dstat-val blue">${p.total}</div><div class="dstat-lbl">Total Slots</div></div>
+        </div>
+        <div style="background:var(--bg);border-radius:12px;padding:1rem;margin-bottom:1rem;font-size:13px">
+          <div style="font-weight:600;margin-bottom:6px">📋 Amenities</div>
+          <div style="color:var(--muted);line-height:1.9">
+            ✓ 24×7 CCTV Surveillance<br>
+            ✓ Covered &amp; Open parking<br>
+            ✓ EV Charging Points available<br>
+            ✓ Security guards on duty<br>
+            ✓ Accessible for differently abled
+          </div>
+        </div>
+        ${avail === 0 ? `
+          <div style="background:#fee2e2;border-radius:10px;padding:1rem;text-align:center;color:#991b1b;font-weight:600">
+            ⚠️ This parking is currently full
+          </div>
+        ` : `
+          <button class="btn btn-primary" style="width:100%;padding:12px" onclick="nextStep()">
+            Book Now →
+          </button>
+        `}
+      ` : ''}
+
+      <!-- STEP 2: Slot Selection — ALL slots shown, dynamic grid sizing -->
+      ${s === 2 ? (() => {
+        const sg = slotGridStyle(p.total);
+        const availCount = slots.filter(s => !s.booked).length;
+        return `
+        <!-- Summary bar -->
+        <div style="display:flex;align-items:center;justify-content:space-between;
+          background:var(--bg);border-radius:10px;padding:8px 14px;margin-bottom:10px;font-size:12px">
+          <span>🅿️ <strong>${p.total}</strong> total slots</span>
+          <span style="color:var(--success)">✓ <strong>${availCount}</strong> free</span>
+          <span style="color:var(--danger)">✗ <strong>${p.booked}</strong> occupied</span>
+        </div>
+
+        <!-- Legend -->
+        <div style="display:flex;gap:14px;margin-bottom:8px;font-size:12px;flex-wrap:wrap">
+          <span><span class="legend-dot" style="background:#f0fdf4;border-color:#22c55e"></span> Available</span>
+          <span><span class="legend-dot" style="background:var(--blue-light);border-color:var(--blue-dark)"></span> Occupied</span>
+          <span><span class="legend-dot" style="background:var(--blue-dark);border-color:var(--blue-dark)"></span> Selected</span>
+        </div>
+
+        <!-- Instruction -->
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">
+          Tap a <span style="color:#166534;font-weight:600">green slot</span> to select it.
+          ${p.total > 150 ? `<span style="color:var(--blue-dark)">(Scroll to see all ${p.total} slots)</span>` : ''}
+        </div>
+
+        <!-- Scrollable slot grid — max height so modal doesn't overflow -->
+        <div style="
+          max-height:320px;
+          overflow-y:auto;
+          border:1.5px solid var(--border);
+          border-radius:12px;
+          padding:10px;
+          background:var(--white);
+        ">
+          <div style="
+            display:grid;
+            grid-template-columns:repeat(${sg.cols}, ${sg.size});
+            gap:4px;
+            justify-content:start;
+          ">
+            ${slots.map(slot => {
+              const isSelected = state.selectedSlot === slot.id;
+              const cls = slot.booked ? 'booked' : isSelected ? 'selected' : 'available';
+              const onclick = slot.booked ? '' : `onclick="selectSlot(${slot.id})"`;
+              return `<div class="slot-box ${cls}" style="width:${sg.size};height:${sg.size};font-size:${sg.font}" ${onclick}>${slot.id}</div>`;
+            }).join('')}
+          </div>
+        </div>
+
+        ${state.selectedSlot ? `
+          <div style="background:#f0fdf4;border:1px solid #22c55e;border-radius:8px;
+            padding:8px 14px;font-size:13px;margin:10px 0;color:#166534;font-weight:600;
+            display:flex;align-items:center;gap:8px">
+            ✅ Slot <strong>#${state.selectedSlot}</strong> selected
+          </div>
+        ` : `
+          <div style="font-size:12px;color:var(--muted);margin-top:8px;text-align:center">
+            No slot selected yet
+          </div>
+        `}
+
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn btn-outline" style="flex:1" onclick="prevStep()">← Back</button>
+          <button class="btn btn-primary" style="flex:2" onclick="nextStep()"
+            ${!state.selectedSlot ? 'disabled' : ''}>
+            Continue →
+          </button>
+        </div>
+      `; })() : ''}
+
+      <!-- STEP 3: User Details Form -->
+      ${s === 3 ? `
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input class="form-input" id="bk-name" placeholder="Your full name"
+            value="${bd.name}" oninput="updateBooking('name',this.value);clearErr('bk-name','err-bk-name')">
+          <div class="field-error" id="err-bk-name">Please enter your full name (min. 2 chars)</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Phone *</label>
+            <input class="form-input" id="bk-phone" placeholder="10-digit mobile" maxlength="10"
+              value="${bd.phone}" oninput="updateBooking('phone',this.value);clearErr('bk-phone','err-bk-phone')">
+            <div class="field-error" id="err-bk-phone">Please enter a valid 10-digit phone number</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-input" id="bk-email" placeholder="Email address" type="email"
+              value="${bd.email}" oninput="updateBooking('email',this.value)">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Date *</label>
+            <input class="form-input" id="bk-date" type="date"
+              value="${bd.date}" oninput="updateBooking('date',this.value);clearErr('bk-date','err-bk-date')"
+              min="${new Date().toISOString().split('T')[0]}">
+            <div class="field-error" id="err-bk-date">Please select a date</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Time *</label>
+            <input class="form-input" id="bk-time" type="time"
+              value="${bd.time}" oninput="updateBooking('time',this.value);clearErr('bk-time','err-bk-time')">
+            <div class="field-error" id="err-bk-time">Please select a time</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Duration (hours)</label>
+          <select class="form-input" onchange="updateBooking('duration',parseInt(this.value))">
+            ${[1,2,3,4,6,8,12,24].map(h => `<option value="${h}" ${bd.duration===h?'selected':''}>${h} hour${h>1?'s':''}</option>`).join('')}
+          </select>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:1rem">
+          <button class="btn btn-outline" style="flex:1" onclick="prevStep()">← Back</button>
+          <button class="btn btn-primary" style="flex:2" onclick="validateAndNextStep()">Review →</button>
+        </div>
+      ` : ''}
+
+      <!-- STEP 4: Payment -->
+      ${s === 4 ? `
+        <div style="font-size:13px;color:var(--muted);margin-bottom:0.75rem">Review your booking</div>
+        <div class="payment-summary">
+          <div class="pay-row"><span>Parking</span><span>${p.name}</span></div>
+          <div class="pay-row"><span>Slot</span><span>#${state.selectedSlot}</span></div>
+          <div class="pay-row"><span>City</span><span>${CITY_DB[state.city].name}</span></div>
+          <div class="pay-row"><span>Name</span><span>${bd.name}</span></div>
+          <div class="pay-row"><span>Phone</span><span>${bd.phone}</span></div>
+          <div class="pay-row"><span>Date</span><span>${bd.date}</span></div>
+          <div class="pay-row"><span>Time</span><span>${bd.time}</span></div>
+          <div class="pay-row"><span>Duration</span><span>${hours} hr${hours>1?'s':''}</span></div>
+          <div class="pay-row"><span>Rate</span><span>${formatINR(p.price)}/hr</span></div>
+          <div class="pay-row"><span>Subtotal</span><span>${formatINR(amount)}</span></div>
+          <div class="pay-row"><span>GST (18%)</span><span>${formatINR(gst)}</span></div>
+          <div class="pay-row"><span>Platform fee</span><span>₹5</span></div>
+          <div class="pay-row pay-total"><span>Total</span><span>${formatINR(total)}</span></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-outline" style="flex:1" onclick="prevStep()">← Back</button>
+        </div>
+        <button class="razorpay-btn" id="pay-btn" onclick="processPayment(${p.id},${total})">
+          🔒 Pay ${formatINR(total)} Securely
+        </button>
+        <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:8px">
+          Secured by Razorpay · UPI · Cards · Net Banking
+        </div>
+      ` : ''}
+
+      <!-- STEP 5: Confirmation -->
+      ${s === 5 && state.confirmation ? (() => {
+        const c = state.confirmation;
+        return `
+        <div class="success-screen">
+          <div class="success-icon">✅</div>
+          <h3 style="font-size:1.2rem;margin-bottom:4px">Booking Confirmed!</h3>
+          <p style="color:var(--muted);font-size:13px">Your slot is reserved in ${CITY_DB[state.city].name}</p>
+          <div class="ticket">
+            <div class="ticket-row"><span>Parking</span><span>${p.name}</span></div>
+            <div class="ticket-row"><span>Slot #</span><span>${state.selectedSlot}</span></div>
+            <div class="ticket-row"><span>City</span><span>${CITY_DB[state.city].name}</span></div>
+            <div class="ticket-row"><span>Date</span><span>${c.date}</span></div>
+            <div class="ticket-row"><span>Time</span><span>${c.time}</span></div>
+            <div class="ticket-row"><span>Duration</span><span>${c.duration} hr${c.duration>1?'s':''}</span></div>
+            <div class="ticket-row"><span>Total Paid</span><span style="color:var(--success)">${formatINR(c.total)}</span></div>
+            <div class="ticket-id">Booking ID: ${c.id}</div>
+          </div>
+          <button class="btn btn-primary" style="width:100%;margin-top:0.5rem" onclick="closeModal();goPage('bookings')">
+            View My Bookings
+          </button>
+          <button class="btn btn-outline" style="width:100%;margin-top:8px" onclick="closeModal()">
+            Find More Parking
+          </button>
+        </div>`;
+      })() : ''}
+
+    </div>
+  </div>
+  </div>`;
+}
+
+// ======================================================
+// MY BOOKINGS PAGE
+// Shows all bookings across all cities for this session
+// ======================================================
+function buildMyBookings() {
+  const myBookings = state.bookings.filter(b => state.user ? b.user === state.user.email : true);
+  return `
+    <div class="section">
+      <div class="section-title">My Bookings (${myBookings.length})</div>
+      ${myBookings.length === 0 ? `
+        <div class="empty">
+          <div class="empty-icon">📋</div>
+          <p>No bookings yet. Find and book a parking spot!</p>
+          <button class="btn btn-primary" style="margin-top:1rem" onclick="goPage('home')">Browse Parking</button>
+        </div>
+      ` : myBookings.map(b => `
+        <div class="history-item">
+          <div class="history-main">
+            <div class="history-name">${b.parking}</div>
+            <div class="history-sub">
+              Slot #${b.slot} · ${b.date} ${b.time} · ${b.duration}hr
+              <span style="margin-left:6px;background:var(--blue-light);color:var(--blue-dark);
+                border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600">
+                📍 ${b.city || 'Lucknow'}
+              </span>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div class="history-price">${formatINR(b.total)}</div>
+            <span class="status-badge ${b.status==='Active'?'status-active':b.status==='Cancelled'?'status-cancelled':'status-pending'}">
+              ${b.status}
+            </span>
+            ${b.status === 'Active' ? `<br><button class="btn btn-danger btn-sm" style="margin-top:6px" onclick="cancelBooking('${b.id}')">Cancel</button>` : ''}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ======================================================
+// ADMIN PAGE
+// Includes city-level overview across all cities + booking table
+// ======================================================
+function buildAdmin() {
+  /* All-city summary stats */
+  const allCityStats = Object.entries(CITY_DB).map(([slug, city]) => {
+    const liveData = slug === state.city ? state.parkingData : city.parking;
+    const totalSlots  = liveData.reduce((a,p) => a+p.total, 0);
+    const totalBooked = liveData.reduce((a,p) => a+p.booked, 0);
+    return { slug, name: city.name, emoji: city.emoji, locations: liveData.length,
+             totalSlots, totalBooked, avail: totalSlots - totalBooked };
+  });
+
+  /* Bookings filtered by city (admin view) */
+  const filteredBookings = state.adminCity === 'all'
+    ? state.bookings
+    : state.bookings.filter(b => b.city === CITY_DB[state.adminCity]?.name);
+
+  return `
+    <div class="admin-city-filter">
+      <span>🏙️ Filter by city:</span>
+      <select class="admin-city-select" onchange="setAdminCity(this.value)">
+        <option value="all" ${state.adminCity==='all'?'selected':''}>All Cities</option>
+        ${Object.entries(CITY_DB).map(([k,v]) =>
+          `<option value="${k}" ${state.adminCity===k?'selected':''}>${v.emoji} ${v.name}</option>`
+        ).join('')}
+      </select>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Platform Overview — All Cities</div>
+      <div class="admin-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">
+        ${allCityStats.map(c => `
+          <div class="admin-card" style="cursor:pointer;${state.city===c.slug?'border-color:var(--blue-dark)':''}"
+               onclick="switchCity('${c.slug}')">
+            <div style="font-size:1.5rem;margin-bottom:6px">${c.emoji}</div>
+            <h4>${c.name}</h4>
+            <div style="font-size:13px;margin-bottom:4px">${c.locations} locations</div>
+            <div style="font-size:12px;color:var(--success)">✓ ${c.avail.toLocaleString()} available</div>
+            <div style="font-size:12px;color:var(--danger)">✗ ${c.totalBooked.toLocaleString()} occupied</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="section-title" style="margin-top:1.5rem">
+        Bookings ${state.adminCity !== 'all' ? '— '+CITY_DB[state.adminCity]?.name : '(All Cities)'}
+        (${filteredBookings.length})
+      </div>
+      ${filteredBookings.length === 0 ? `
+        <div class="empty"><div class="empty-icon">📊</div><p>No bookings yet.</p></div>
+      ` : `
+        <div style="overflow-x:auto">
+          <table class="bookings-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>City</th>
+                <th>Parking</th>
+                <th>Slot</th>
+                <th>User</th>
+                <th>Date/Time</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filteredBookings.map(b => `
+                <tr>
+                  <td><code style="font-size:10px">${b.id}</code></td>
+                  <td>${b.city || '—'}</td>
+                  <td>${b.parking}</td>
+                  <td>#${b.slot}</td>
+                  <td>${b.name || b.user}</td>
+                  <td>${b.date} ${b.time}</td>
+                  <td>${formatINR(b.total)}</td>
+                  <td><span class="status-badge ${b.status==='Active'?'status-active':b.status==='Cancelled'?'status-cancelled':'status-pending'}">${b.status}</span></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `}
+    </div>
+  `;
+}
+
+// ======================================================
+// AUTH PAGE
+// ======================================================
+function buildAuth() {
+  const isLogin = state.authMode === 'login';
+  return `
+    <div style="max-width:400px;margin:3rem auto;padding:0 1.5rem">
+      <div style="background:var(--white);border-radius:20px;border:1.5px solid var(--border);padding:2rem;box-shadow:var(--shadow-lg)">
+        <div style="text-align:center;margin-bottom:1.5rem">
+          <div class="logo-icon" style="margin:0 auto 0.75rem;width:44px;height:44px;font-size:20px">P</div>
+          <h2 style="font-size:1.25rem">${isLogin ? 'Welcome back' : 'Create account'}</h2>
+          <p style="font-size:13px;color:var(--muted);margin-top:4px">Smart Parking across Uttar Pradesh</p>
+        </div>
+        <div class="auth-tabs">
+          <button class="auth-tab ${isLogin?'active':''}" onclick="setAuthMode('login')">Login</button>
+          <button class="auth-tab ${!isLogin?'active':''}" onclick="setAuthMode('signup')">Sign Up</button>
+        </div>
+
+        ${!isLogin ? `
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input class="form-input" id="auth-name" placeholder="Your full name">
+            <div class="field-error" id="err-auth-name">Please enter your name (min. 2 chars)</div>
+          </div>
+        ` : ''}
+        <div class="form-group">
+          <label class="form-label">Email *</label>
+          <input class="form-input" id="auth-email" type="email" placeholder="you@example.com">
+          <div class="field-error" id="err-auth-email">Please enter a valid email</div>
+        </div>
+        ${!isLogin ? `
+          <div class="form-group">
+            <label class="form-label">Phone *</label>
+            <input class="form-input" id="auth-phone" placeholder="10-digit mobile" maxlength="10">
+            <div class="field-error" id="err-auth-phone">Please enter a valid 10-digit phone number</div>
+          </div>
+        ` : ''}
+        <div class="form-group">
+          <label class="form-label">Password *</label>
+          <input class="form-input" id="auth-pass" type="password" placeholder="Min. 6 characters">
+          <div class="field-error" id="err-auth-pass">Password must be at least 6 characters</div>
+        </div>
+
+        <button class="btn btn-primary" style="width:100%;padding:12px;margin-top:0.5rem"
+          onclick="${isLogin ? 'doLogin()' : 'doSignup()'}">
+          ${isLogin ? 'Login' : 'Create Account'}
+        </button>
+
+        ${isLogin ? `
+          <div style="background:var(--blue-light);border-radius:10px;padding:1rem;margin-top:1rem;font-size:12px;color:var(--muted)">
+            <strong>Demo credentials:</strong><br>
+            Admin: admin@parkit.in / admin123<br>
+            User: user@parkit.in / user123
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// ======================================================
+// BOOKING FORM VALIDATION
+// ======================================================
+function showFieldErr(inputId, errId) {
+  const el  = document.getElementById(inputId);
+  const err = document.getElementById(errId);
+  if (el)  el.classList.add('error');
+  if (err) err.classList.add('show');
+}
+function clearErr(inputId, errId) {
+  const el  = document.getElementById(inputId);
+  const err = document.getElementById(errId);
+  if (el)  el.classList.remove('error');
+  if (err) err.classList.remove('show');
+}
+
+window.validateAndNextStep = function() {
+  const bd = state.bookingData;
+  let ok = true;
+
+  if (!VALIDATORS.name(bd.name)) { showFieldErr('bk-name','err-bk-name'); ok = false; }
+  if (!VALIDATORS.phone(bd.phone)) { showFieldErr('bk-phone','err-bk-phone'); ok = false; }
+  if (!bd.date) { showFieldErr('bk-date','err-bk-date'); ok = false; }
+  if (!bd.time) { showFieldErr('bk-time','err-bk-time'); ok = false; }
+
+  if (!ok) { showToast('Please fill all required fields correctly', 'error'); return; }
+  nextStep();
+};
+
+// ======================================================
+// PAYMENT PROCESSING
+// ======================================================
+window.processPayment = function(pid, total) {
+  const p  = state.parkingData.find(x => x.id === pid);
+  const bd = state.bookingData;
+
+  // Double-booking guard
+  const bookedSet = bookedSlotsMap[pid];
+  if (bookedSet && bookedSet.has(state.selectedSlot)) {
+    showToast('This slot was just taken. Please select another.', 'error');
+    state.modalStep = 2;
+    state.selectedSlot = null;
+    render();
+    return;
+  }
+
+  const btn = document.getElementById('pay-btn');
+  if (btn) { btn.innerHTML = `<span class="spinner"></span> Processing...`; btn.disabled = true; }
+
+  setTimeout(() => {
+    const id   = genId();
+    const date = bd.date || new Date().toLocaleDateString('en-IN');
+    const time = bd.time || new Date().toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+
+    // Mark slot as booked
+    bookedSlotsMap[pid].add(state.selectedSlot);
+    p.booked = Math.min(p.total, p.booked + 1);
+
+    const booking = {
+      id, parking: p.name, parkingId: pid,
+      slot: state.selectedSlot,
+      city: CITY_DB[state.city].name,   // ← city tag on each booking
+      date, time, duration: bd.duration || 1,
+      total, user: state.user?.email || 'guest@parkit.in',
+      name: bd.name, phone: bd.phone, status: 'Active'
+    };
+
+    state.bookings.push(booking);
+    state.confirmation = { id, date, time, duration: bd.duration || 1, total };
+    state.modalStep = 5;
+
+    sendBookingToBackend(booking);
+    render();
+    showToast('Booking confirmed! 🎉', 'success');
+  }, 1800);
+};
+
+async function sendBookingToBackend(booking) {
+  try {
+    await fetch(`${API_BASE}/booking`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(booking)
+    });
+  } catch (e) {
+    console.log('Backend not reachable — booking saved locally only.');
+  }
+}
+
+// ======================================================
+// AUTH HANDLERS
+// ======================================================
+window.doLogin = function() {
+  const emailEl = document.getElementById('auth-email');
+  const passEl  = document.getElementById('auth-pass');
+  const email   = emailEl?.value.trim() || '';
+  const pass    = passEl?.value || '';
+
+  let ok = true;
+  if (!email) { showAuthErr('auth-email','err-auth-email'); ok = false; }
+  if (!pass)  { showAuthErr('auth-pass','err-auth-pass'); ok = false; }
+  if (!ok) return;
+
+  if (email === 'admin@parkit.in' && pass === 'admin123') {
+    state.user = { name: 'Admin User', email, isAdmin: true };
+    state.page = 'home'; render();
+    showToast('Welcome back, Admin! 👋', 'success');
+  } else if (email === 'user@parkit.in' && pass === 'user123') {
+    state.user = { name: 'Rahul Verma', email, isAdmin: false };
+    state.page = 'home'; render();
+    showToast('Welcome back, Rahul! 👋', 'success');
+  } else {
+    showToast('Invalid credentials. Check the demo logins below.', 'error');
+    emailEl.classList.add('error');
+    passEl.classList.add('error');
+  }
+};
+
+window.doSignup = function() {
+  const nameEl  = document.getElementById('auth-name');
+  const emailEl = document.getElementById('auth-email');
+  const phoneEl = document.getElementById('auth-phone');
+  const passEl  = document.getElementById('auth-pass');
+
+  const name  = nameEl?.value.trim()  || '';
+  const email = emailEl?.value.trim() || '';
+  const phone = phoneEl?.value.trim() || '';
+  const pass  = passEl?.value         || '';
+
+  let ok = true;
+  if (!VALIDATORS.name(name))     { showAuthErr('auth-name','err-auth-name'); ok = false; }
+  if (!VALIDATORS.email(email))   { showAuthErr('auth-email','err-auth-email'); ok = false; }
+  if (!VALIDATORS.phone(phone))   { showAuthErr('auth-phone','err-auth-phone'); ok = false; }
+  if (!VALIDATORS.password(pass)) { showAuthErr('auth-pass','err-auth-pass'); ok = false; }
+  if (!ok) { showToast('Please fix the errors above', 'error'); return; }
+
+  sendAuthToBackend({ name, email, phone, password: pass, type: 'signup' });
+  state.user = { name, email, isAdmin: false };
+  state.page = 'home';
+  render();
+  showToast(`Account created! Welcome, ${name.split(' ')[0]} 🎉`, 'success');
+};
+
+function showAuthErr(inputId, errId) {
+  const el  = document.getElementById(inputId);
+  const err = document.getElementById(errId);
+  if (el)  el.classList.add('error');
+  if (err) err.classList.add('show');
+}
+
+async function sendAuthToBackend(data) {
+  try {
+    await fetch(`${API_BASE}/auth`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+  } catch (e) {
+    console.log('Backend not reachable for auth notification.');
+  }
+}
+
+// ======================================================
+// TOAST NOTIFICATION
+// ======================================================
+function showToast(msg, type = 'info') {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3200);
+}
+
+// ======================================================
+// CANCEL BOOKING
+// ======================================================
+window.cancelBooking = function(bid) {
+  const b = state.bookings.find(x => x.id === bid);
+  if (b && confirm(`Cancel booking ${bid}? This cannot be undone.`)) {
+    b.status = 'Cancelled';
+    const p = state.parkingData.find(x => x.id === b.parkingId);
+    if (p) {
+      p.booked = Math.max(0, p.booked - 1);
+      if (bookedSlotsMap[b.parkingId]) bookedSlotsMap[b.parkingId].delete(b.slot);
+    }
+    render();
+    showToast('Booking cancelled.', 'info');
+  }
+};
+
+// ======================================================
+// GLOBAL WINDOW FUNCTIONS — City Selection Logic
+// ======================================================
+
+/**
+ * switchCity(slug) — core city-switching function
+ * Called from city dropdown or admin card click.
+ * Delegates to loadCity() which:
+ *   1. Deep-clones that city's parking data into state.parkingData
+ *   2. Rebuilds bookedSlotsMap (slot-level booking state) for the new city
+ *   3. Resets search/area filters
+ *   4. Triggers render()
+ */
+window.switchCity       = slug  => { loadCity(slug); };
+
+/** Toggle the city selector dropdown open/closed */
+window.toggleCityDropdown = () => { state.showCityDropdown = !state.showCityDropdown; state.citySearch = ''; render(); };
+
+/** Live-filter cities within the dropdown search box */
+window.updateCitySearch  = v    => { state.citySearch = v; render(); };
+
+window.goPage           = p    => { state.page = p; state.modal = null; state.showCityDropdown = false; render(); };
+window.areaChange       = a    => { state.area = a; render(); };
+window.searchChange     = v    => { state.search = v; render(); };
+window.openModal        = id   => { state.modal = id; state.modalStep = 1; state.selectedSlot = null; state.confirmation = null; render(); };
+window.closeModal       = ()   => { state.modal = null; state.modalStep = 1; state.selectedSlot = null; state.bookingData = {name:'',phone:'',email:'',date:'',time:'',duration:1}; render(); };
+window.closeModalOverlay = e   => { if (e.target.classList.contains('modal-overlay')) closeModal(); };
+window.nextStep         = ()   => { state.modalStep++; render(); };
+window.prevStep         = ()   => { state.modalStep--; render(); };
+window.selectSlot       = id   => { state.selectedSlot = id; render(); };
+window.updateBooking    = (k,v)=> { state.bookingData[k] = v; };
+window.setAuthMode      = m    => { state.authMode = m; render(); };
+window.setAdminCity     = c    => { state.adminCity = c; render(); };
+window.logout           = ()   => { state.user = null; state.page = 'home'; render(); showToast('Logged out successfully.'); };
+
+/** Close city dropdown when clicking outside */
+document.addEventListener('click', e => {
+  if (state.showCityDropdown && !e.target.closest('.hero-city-wrapper')) {
+    state.showCityDropdown = false;
+    render();
+  }
+}, true);
+
+function attachEvents() { /* Event delegation handled via inline onclick */ }
+
+// Boot the app
+render();
+</script>
+</body>
+</html>
