@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parkit – Smart Parking Uttar Pradesh</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>emailjs.init('5VBLJvSe0B55TN2vA');</script>
+
+<!-- Firebase Compat SDK — works in a plain script tag, no module issues -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --blue:#4da6ff;--blue-light:#e8f4ff;--blue-mid:#b3d9ff;
+  --blue-dark:#1a7fd4;--blue-darker:#0f5fa8;
+  --white:#fff;--bg:#f0f7ff;--text:#1a1a2e;--muted:#6b7a99;
+  --border:#c8dff5;--card:#fff;
+  --success:#22c55e;--warning:#f59e0b;--danger:#ef4444;
+  --shadow:0 2px 16px rgba(26,127,212,.08);
+  --shadow-lg:0 8px 32px rgba(26,127,212,.18);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+h1,h2,h3,h4{font-family:'Plus Jakarta Sans',sans-serif}
+a{color:var(--blue-dark);text-decoration:none}
+
+nav{background:var(--white);border-bottom:1.5px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:62px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
+.logo{display:flex;align-items:center;gap:8px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.35rem;color:var(--blue-dark)}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--blue-dark),var(--blue));border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:800}
+.nav-tabs{display:flex;gap:4px}
+.nav-tab{padding:6px 15px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:all .2s}
+.nav-tab.active,.nav-tab:hover{background:var(--blue-light);color:var(--blue-dark)}
+.nav-actions{display:flex;gap:8px;align-items:center}
+
+.btn{padding:8px 18px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif}
+.btn-outline{background:transparent;border:1.5px solid var(--blue-dark);color:var(--blue-dark)}
+.btn-outline:hover{background:var(--blue-light)}
+.btn-primary{background:var(--blue-dark);color:#fff}
+.btn-primary:hover{background:var(--blue-darker);transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn-sm{padding:5px 13px;font-size:12px}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger:hover{filter:brightness(.9)}
+.btn-warning{background:var(--warning);color:#fff}
+
+.city-selector-bar{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:50px;padding:6px 16px;display:inline-flex;align-items:center;gap:8px;margin-bottom:1rem;cursor:pointer;transition:background .2s}
+.city-selector-bar:hover{background:rgba(255,255,255,.2)}
+.city-dropdown-panel{position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--white);border:1.5px solid var(--border);border-radius:16px;box-shadow:var(--shadow-lg);padding:.75rem;min-width:320px;z-index:500;animation:fadeIn .2s ease}
+.city-dropdown-search{width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);outline:none;margin-bottom:8px}
+.city-dropdown-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;max-height:240px;overflow-y:auto}
+.city-option{padding:8px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px;transition:background .15s;color:var(--text)}
+.city-option:hover{background:var(--blue-light);color:var(--blue-dark)}
+.city-option.selected{background:var(--blue-dark);color:#fff}
+
+.hero{background:linear-gradient(135deg,var(--blue-darker),var(--blue-dark) 45%,var(--blue));padding:2.5rem 1.5rem 2rem;text-align:center;color:#fff;position:relative}
+.hero-city-wrapper{position:relative;display:inline-block;margin-bottom:.25rem}
+.hero h1{font-size:2.3rem;font-weight:800;margin-bottom:.4rem;line-height:1.2}
+.hero-city-name{color:#ffe066}
+.hero p{font-size:1rem;opacity:.9;margin-bottom:1.5rem}
+.search-bar{background:#fff;border-radius:50px;padding:6px;display:flex;max-width:640px;margin:0 auto;box-shadow:0 8px 30px rgba(0,0,0,.15)}
+.search-bar input{flex:1;border:none;outline:none;padding:8px 16px;font-size:14px;font-family:'DM Sans',sans-serif;background:transparent;color:var(--text)}
+.search-bar select{border:none;outline:none;padding:8px 12px;font-size:14px;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;cursor:pointer}
+
+.stats-bar{display:flex;background:var(--white);border-bottom:1px solid var(--border)}
+.stat-item{flex:1;padding:1rem;text-align:center;border-right:1px solid var(--border)}
+.stat-item:last-child{border-right:none}
+.stat-num{font-size:1.45rem;font-weight:800;color:var(--blue-dark);font-family:'Plus Jakarta Sans',sans-serif}
+.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.city-stat-badge{display:inline-flex;align-items:center;gap:4px;background:var(--blue-light);color:var(--blue-dark);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;margin-bottom:.4rem}
+
+.area-chips{padding:1rem 1.5rem;display:flex;gap:8px;flex-wrap:wrap;background:var(--white);border-bottom:1px solid var(--border)}
+.chip{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);color:var(--muted);background:var(--white);transition:all .2s}
+.chip.active,.chip:hover{background:var(--blue-light);color:var(--blue-dark);border-color:var(--blue-mid)}
+
+.section{padding:1.5rem}
+.section-title{font-size:1rem;font-weight:700;margin-bottom:1rem}
+.parking-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+.parking-card{background:var(--card);border-radius:16px;border:1.5px solid var(--border);overflow:hidden;cursor:pointer;transition:all .2s;box-shadow:var(--shadow);animation:fadeIn .3s ease both}
+.parking-card:hover{border-color:var(--blue-mid);box-shadow:var(--shadow-lg);transform:translateY(-3px)}
+.card-img{height:120px;background:linear-gradient(135deg,var(--blue-light),var(--blue-mid));display:flex;align-items:center;justify-content:center;font-size:2.5rem;position:relative}
+.card-badge{position:absolute;top:10px;right:10px;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.badge-available{background:#dcfce7;color:#166534}
+.badge-full{background:#fee2e2;color:#991b1b}
+.badge-limited{background:#fef3c7;color:#92400e}
+.card-body{padding:1rem}
+.card-name{font-weight:700;font-size:.95rem;margin-bottom:3px}
+.card-area{font-size:12px;color:var(--muted);margin-bottom:8px}
+.card-meta{display:flex;justify-content:space-between;align-items:center}
+.card-price{font-weight:700;color:var(--blue-dark);font-size:1rem}
+.slot-bar{height:6px;background:var(--blue-light);border-radius:3px;margin:8px 0;overflow:hidden}
+.slot-fill{height:100%;background:var(--blue-dark);border-radius:3px;transition:width .5s}
+.slot-info{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(15,40,80,.55);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem}
+.modal{background:var(--white);border-radius:20px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(15,40,80,.25);animation:modalPop .25s ease}
+.modal-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--white);z-index:1}
+.modal-header h3{font-size:1.1rem;font-weight:700}
+.close-btn{width:30px;height:30px;border-radius:50%;background:var(--blue-light);border:none;cursor:pointer;color:var(--blue-dark);font-size:16px;display:flex;align-items:center;justify-content:center}
+.close-btn:hover{background:var(--blue-mid)}
+.modal-body{padding:1.5rem}
+
+.detail-hero{background:linear-gradient(135deg,var(--blue-light),var(--blue-mid));border-radius:12px;padding:1.5rem;margin-bottom:1.25rem;text-align:center}
+.detail-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1.25rem}
+.dstat{background:var(--bg);border-radius:10px;padding:.75rem;text-align:center;border:1px solid var(--border)}
+.dstat-val{font-size:1.3rem;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif}
+.dstat-val.green{color:var(--success)}.dstat-val.blue{color:var(--blue-dark)}.dstat-val.red{color:var(--danger)}
+.dstat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase}
+
+.slot-box{border-radius:6px;border:1.5px solid;display:flex;align-items:center;justify-content:center;font-weight:600;cursor:pointer;transition:all .15s;user-select:none;flex-shrink:0}
+.slot-box.available{border-color:#22c55e;background:#f0fdf4;color:#166534}
+.slot-box.available:hover{background:#dcfce7;transform:scale(1.08)}
+.slot-box.booked{border-color:var(--blue-dark);background:var(--blue-light);color:var(--blue-dark);cursor:not-allowed;opacity:.85}
+.slot-box.selected{border-color:var(--blue-dark);background:var(--blue-dark);color:#fff;transform:scale(1.08)}
+.legend-dot{width:13px;height:13px;border-radius:3px;display:inline-block;border:1.5px solid}
+
+.form-group{margin-bottom:1rem}
+.form-label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:block}
+.form-input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);outline:none;transition:border .2s}
+.form-input:focus{border-color:var(--blue-dark);box-shadow:0 0 0 3px rgba(77,166,255,.15)}
+.form-input.error{border-color:var(--danger)!important;background:#fff8f8}
+.field-error{font-size:11.5px;color:var(--danger);margin-top:4px;display:none;font-weight:500}
+.field-error.show{display:block}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+.payment-summary{background:var(--bg);border-radius:12px;padding:1rem;margin-bottom:1rem}
+.pay-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-bottom:1px dashed var(--border)}
+.pay-row:last-child{border:none}
+.pay-total{font-weight:800;font-size:15px;color:var(--blue-dark);padding-top:10px}
+.razorpay-btn{width:100%;padding:14px;background:linear-gradient(135deg,#072654,#1a7fd4);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;margin-top:12px;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.razorpay-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(26,127,212,.35)}
+.razorpay-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+.success-screen{text-align:center}
+.success-icon{font-size:3.5rem;margin-bottom:.75rem;animation:bounceIn .5s ease}
+.ticket{background:linear-gradient(135deg,var(--blue-light),#fff);border:1.5px dashed var(--blue-mid);border-radius:16px;padding:1.25rem;margin:1rem 0;text-align:left}
+.ticket-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-bottom:1px dashed var(--border)}
+.ticket-row:last-child{border:none}
+.ticket-row span:last-child{font-weight:600;color:var(--blue-dark)}
+.ticket-id{text-align:center;margin-top:.75rem;font-size:14px;font-weight:800;letter-spacing:1px;color:var(--blue-darker);padding:8px;background:rgba(77,166,255,.12);border-radius:8px}
+.cancel-warning{background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:10px 14px;font-size:12px;color:#856404;margin-top:10px;text-align:center}
+
+.step-indicator{display:flex;align-items:center;margin-bottom:1.25rem}
+.step{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--muted)}
+.step-num{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;background:var(--white)}
+.step.active .step-num{background:var(--blue-dark);border-color:var(--blue-dark);color:#fff}
+.step.done .step-num{background:var(--success);border-color:var(--success);color:#fff}
+.step.active{color:var(--blue-dark)}
+.step-line{flex:1;height:2px;background:var(--border)}
+.step-line.done{background:var(--success)}
+
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:12px 24px;border-radius:50px;font-size:13px;font-weight:600;z-index:9999;animation:toastIn .3s ease;white-space:nowrap}
+.toast.success{background:#166534}.toast.error{background:#991b1b}.toast.info{background:var(--blue-dark)}
+
+.history-item{background:var(--white);border-radius:12px;border:1.5px solid var(--border);padding:1rem;margin-bottom:.75rem;display:flex;justify-content:space-between;align-items:flex-start;box-shadow:var(--shadow)}
+.history-name{font-weight:700;font-size:.9rem;margin-bottom:3px}
+.history-sub{font-size:12px;color:var(--muted)}
+.history-price{font-weight:800;color:var(--blue-dark);font-size:1rem}
+.status-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-top:4px}
+.status-active{background:#dcfce7;color:#166534}
+.status-cancelled{background:#fee2e2;color:#991b1b}
+
+.auth-card{max-width:420px;margin:3rem auto;padding:0 1.5rem}
+.auth-inner{background:var(--white);border-radius:20px;border:1.5px solid var(--border);padding:2rem;box-shadow:var(--shadow-lg)}
+.auth-tabs{display:flex;background:var(--bg);border-radius:12px;padding:4px;margin-bottom:1.25rem}
+.auth-tab{flex:1;padding:8px;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.auth-tab.active{background:var(--white);color:var(--blue-dark);box-shadow:var(--shadow)}
+
+.admin-page{max-width:1100px;margin:0 auto;padding:1.5rem}
+.admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+.admin-title{font-size:1.4rem;font-weight:800}
+.admin-tabs{display:flex;gap:4px;background:var(--bg);border-radius:12px;padding:4px}
+.admin-tab{padding:8px 16px;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.admin-tab.active{background:var(--white);color:var(--blue-dark);box-shadow:var(--shadow)}
+.admin-stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem}
+.admin-stat-card{background:var(--white);border-radius:14px;border:1.5px solid var(--border);padding:1.25rem;box-shadow:var(--shadow)}
+.admin-stat-val{font-size:2rem;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;color:var(--blue-dark)}
+.admin-stat-lbl{font-size:12px;color:var(--muted);margin-top:4px}
+.bookings-table{width:100%;border-collapse:collapse;font-size:13px}
+.bookings-table th{background:var(--bg);padding:10px 12px;text-align:left;font-weight:700;font-size:11px;text-transform:uppercase;color:var(--muted);border-bottom:1.5px solid var(--border)}
+.bookings-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.bookings-table tr:hover td{background:var(--bg)}
+.slot-manage-item{display:flex;align-items:center;justify-content:space-between;background:var(--white);border-radius:10px;border:1.5px solid var(--border);padding:10px 14px;margin-bottom:8px;font-size:13px}
+.slot-add-form{background:var(--white);border-radius:14px;border:1.5px solid var(--border);padding:1.25rem;margin-bottom:1.5rem}
+.admin-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#fff3cd,#ffe066);color:#92400e;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;border:1px solid #ffc107}
+.empty{text-align:center;padding:3rem 1rem;color:var(--muted)}
+.empty-icon{font-size:2.5rem;margin-bottom:.5rem}
+
+.contact-page{max-width:760px;margin:0 auto;padding:2rem 1.5rem;animation:fadeIn .3s ease}
+.contact-hero{background:linear-gradient(135deg,var(--blue-darker),var(--blue-dark) 45%,var(--blue));border-radius:20px;padding:2.5rem 2rem;text-align:center;color:#fff;margin-bottom:2rem}
+.contact-hero h2{font-size:1.8rem;font-weight:800;margin-bottom:.5rem}
+.contact-hero p{opacity:.9;font-size:.95rem}
+.contact-cards{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:2rem}
+@media(max-width:560px){.contact-cards{grid-template-columns:1fr}}
+.contact-card{background:var(--white);border-radius:16px;border:1.5px solid var(--border);padding:1.75rem 1.5rem;text-align:center;box-shadow:var(--shadow);transition:all .2s}
+.contact-card:hover{border-color:var(--blue-mid);box-shadow:var(--shadow-lg);transform:translateY(-3px)}
+.contact-card-icon{font-size:2.5rem;margin-bottom:.75rem}
+.contact-card-title{font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:.5rem}
+.contact-card-value{font-size:1.05rem;font-weight:700;color:var(--blue-dark);margin-bottom:.4rem}
+.contact-card-note{font-size:12px;color:var(--muted)}
+.contact-card a{color:var(--blue-dark);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.contact-form-box{background:var(--white);border-radius:16px;border:1.5px solid var(--border);padding:1.75rem;box-shadow:var(--shadow)}
+.contact-form-box h3{font-size:1.05rem;font-weight:700;margin-bottom:1.25rem}
+.contact-form-box textarea{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);outline:none;resize:vertical;min-height:110px;transition:border .2s}
+.contact-form-box textarea:focus{border-color:var(--blue-dark);box-shadow:0 0 0 3px rgba(77,166,255,.15)}
+.contact-info-note{background:var(--blue-light);border-radius:12px;padding:1rem 1.25rem;font-size:13px;color:var(--blue-darker);margin-top:1.25rem;border:1px solid var(--blue-mid)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes modalPop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes bounceIn{0%{transform:scale(.3)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+</style>
+</head>
+<body>
+<div id="app"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:80vh;gap:1rem;color:#6b7a99"><div style="width:36px;height:36px;border:3px solid #b3d9ff;border-top-color:#1a7fd4;border-radius:50%;animation:spin .7s linear infinite"></div><p>Loading Parkit...</p></div></div>
+
+<script>
+/* ── FIREBASE INIT (compat — same scope, no module issues) ── */
+firebase.initializeApp({
+  apiKey:           "AIzaSyD125N7kbyfdy5JC-flH85dGrClT7n0R1w",
+  authDomain:       "parkit-9e035.firebaseapp.com",
+  projectId:        "parkit-9e035",
+  storageBucket:    "parkit-9e035.firebasestorage.app",
+  messagingSenderId:"672621386685",
+  appId:            "1:672621386685:web:a7354d99eda5adb597d0d4"
+});
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+/* ── CITY DATA ── */
+const CITY_DB={
+  lucknow:{name:'Lucknow',emoji:'🏛️',pop:'3.5M',tagline:'The City of Nawabs',
+    areas:['All','Hazratganj','Gomti Nagar','Aliganj','Indira Nagar','Charbagh','Aminabad','Alambagh'],
+    parking:[
+      {id:101,name:'Hazratganj Central Parking',area:'Hazratganj',address:'MG Road, Hazratganj',total:200,booked:140,price:30,rating:4.5,emoji:'🏛️'},
+      {id:102,name:'Gomti Nagar Metro Parking',area:'Gomti Nagar',address:'Vipin Khand, Gomti Nagar',total:350,booked:210,price:25,rating:4.3,emoji:'🚇'},
+      {id:103,name:'Charbagh Station Parking',area:'Charbagh',address:'Lucknow Railway Station',total:500,booked:380,price:20,rating:4.0,emoji:'🚂'},
+      {id:104,name:'Phoenix Palassio Mall Parking',area:'Gomti Nagar',address:'Sultanpur Road, Lucknow',total:800,booked:450,price:40,rating:4.6,emoji:'🏬'},
+      {id:105,name:'Aminabad Market Parking',area:'Aminabad',address:'Aminabad Main Market',total:150,booked:130,price:15,rating:3.8,emoji:'🛒'},
+      {id:106,name:'Indira Nagar Sec-18 Parking',area:'Indira Nagar',address:'Sector 18, Indira Nagar',total:100,booked:45,price:20,rating:4.1,emoji:'🏘️'},
+      {id:107,name:'Alambagh Bus Terminal Parking',area:'Alambagh',address:'Alambagh UPSRTC Terminal',total:250,booked:180,price:15,rating:3.9,emoji:'🚌'},
+      {id:108,name:'Aliganj Fun Mall Parking',area:'Aliganj',address:'Sikander Bagh Chauraha',total:300,booked:200,price:35,rating:4.4,emoji:'🎡'},
+    ]},
+  varanasi:{name:'Varanasi',emoji:'🕌',pop:'1.5M',tagline:'The Spiritual Capital',
+    areas:['All','Godaulia','Lanka','Sigra','Sarnath','Cantonment','Assi Ghat'],
+    parking:[
+      {id:201,name:'Kashi Vishwanath Corridor Parking',area:'Godaulia',address:'Vishwanath Gali',total:300,booked:250,price:30,rating:4.3,emoji:'🛕'},
+      {id:202,name:'BHU Gate Parking',area:'Lanka',address:'BHU Main Gate, Lanka',total:400,booked:200,price:20,rating:4.4,emoji:'🎓'},
+      {id:203,name:'Varanasi Junction Parking',area:'Cantonment',address:'Railway Station',total:500,booked:380,price:25,rating:4.0,emoji:'🚂'},
+      {id:204,name:'Sarnath Temple Parking',area:'Sarnath',address:'Dhamek Stupa Road',total:200,booked:80,price:15,rating:4.5,emoji:'☸️'},
+    ]},
+  agra:{name:'Agra',emoji:'🗼',pop:'1.7M',tagline:'City of the Taj Mahal',
+    areas:['All','Taj Ganj','Sadar Bazar','Fatehabad Road','Sikandra'],
+    parking:[
+      {id:501,name:'Taj Mahal East Gate Parking',area:'Taj Ganj',address:'Taj East Gate Road',total:500,booked:380,price:50,rating:4.5,emoji:'🕌'},
+      {id:502,name:'Fatehabad Road Hotel Parking',area:'Fatehabad Road',address:'Fatehabad Road Strip',total:200,booked:120,price:40,rating:4.3,emoji:'🏨'},
+    ]},
+  noida:{name:'Noida',emoji:'🏙️',pop:'0.9M',tagline:'The IT & Corporate Hub',
+    areas:['All','Sector 18','Sector 62','Film City'],
+    parking:[
+      {id:601,name:'DLF Mall of India Parking',area:'Sector 18',address:'DLF Mall, Sector 18',total:800,booked:550,price:50,rating:4.6,emoji:'🏬'},
+      {id:602,name:'Sector 62 IT Hub Parking',area:'Sector 62',address:'IT Park, Sector 62',total:400,booked:250,price:35,rating:4.4,emoji:'💻'},
+    ]},
+  prayagraj:{name:'Prayagraj',emoji:'🏺',pop:'1.2M',tagline:'The Sangam City',
+    areas:['All','Civil Lines','George Town','Allenganj'],
+    parking:[
+      {id:401,name:'Civil Lines Central Parking',area:'Civil Lines',address:'MG Marg, Civil Lines',total:150,booked:90,price:25,rating:4.2,emoji:'🏛️'},
+      {id:402,name:'Triveni Sangam Parking',area:'George Town',address:'Sangam Nose',total:200,booked:120,price:15,rating:4.3,emoji:'🌊'},
+    ]},
+};
+
+const PARKING_LOCATIONS=[
+  {id:'p101',name:'Hazratganj Central Parking — Lucknow'},
+  {id:'p102',name:'Gomti Nagar Metro Parking — Lucknow'},
+  {id:'p103',name:'Charbagh Station Parking — Lucknow'},
+  {id:'p104',name:'Phoenix Palassio Mall Parking — Lucknow'},
+  {id:'p201',name:'Kashi Vishwanath Corridor Parking — Varanasi'},
+  {id:'p202',name:'BHU Gate Parking — Varanasi'},
+  {id:'p501',name:'Taj Mahal East Gate Parking — Agra'},
+  {id:'p601',name:'DLF Mall of India Parking — Noida'},
+  {id:'p401',name:'Civil Lines Central Parking — Prayagraj'},
+];
+
+/* ── STATE ── */
+const bookedSlotsMap={};
+let state={
+  page:'home',city:'lucknow',citySearch:'',showCityDropdown:false,
+  area:'All',search:'',modal:null,modalStep:1,selectedSlot:null,
+  bookingData:{name:'',phone:'',email:'',date:'',time:'',duration:1},
+  user:null,bookings:[],adminBookings:[],adminSlots:[],
+  authMode:'login',adminAuthMode:'login',adminTab:'overview',
+  parkingData:[],confirmation:null,adminViewingAsUser:false
+};
+
+(function initCity(){
+  state.parkingData=JSON.parse(JSON.stringify(CITY_DB[state.city].parking));
+  state.parkingData.forEach(p=>{
+    const s=new Set();
+    for(let i=1;i<=p.booked&&i<=p.total;i++) s.add(i);
+    bookedSlotsMap[p.id]=s;
+  });
+})();
+
+/* ── UTILS ── */
+const V={
+  name: v=>v.trim().length>=2,
+  phone:v=>/^[6-9]\d{9}$/.test(v.trim()),
+  email:v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()),
+  pass: v=>v.length>=6
+};
+const $=id=>document.getElementById(id);
+const val=id=>$(id)?.value.trim()||'';
+const passVal=id=>$(id)?.value||'';
+
+function getAvail(p){return p.total-p.booked;}
+function getStatus(p){
+  const r=p.booked/p.total;
+  if(r>=1)   return{label:'Full',cls:'badge-full'};
+  if(r>=0.8) return{label:'Limited',cls:'badge-limited'};
+  return          {label:'Available',cls:'badge-available'};
+}
+function fmtINR(n){return '₹'+n.toLocaleString('en-IN');}
+function genId(){return 'PKT'+Math.random().toString(36).substr(2,6).toUpperCase();}
+function genSlots(p){
+  const bs=bookedSlotsMap[p.id]||new Set();
+  return Array.from({length:p.total},(_,i)=>({id:i+1,booked:bs.has(i+1)}));
+}
+function slotSz(t){
+  if(t<=50)  return{cols:10,size:'36px',font:'10px'};
+  if(t<=150) return{cols:12,size:'32px',font:'9px'};
+  if(t<=400) return{cols:15,size:'28px',font:'8px'};
+  return          {cols:20,size:'22px',font:'7px'};
+}
+function canCancel(b){
+  if(!b.date||!b.time) return false;
+  return(new Date(b.date+'T'+b.time)-new Date())>3600000;
+}
+function fbErr(code){
+  return({
+    'auth/email-already-in-use':'This email is already registered. Please login instead.',
+    'auth/invalid-email':'Please enter a valid email address.',
+    'auth/weak-password':'Password must be at least 6 characters.',
+    'auth/user-not-found':'No account found with this email.',
+    'auth/wrong-password':'Incorrect password. Please try again.',
+    'auth/invalid-credential':'Invalid email or password.',
+    'auth/too-many-requests':'Too many attempts. Please wait a moment.',
+    'permission-denied':'Firestore permission denied. Check security rules.',
+  }[code]||'Something went wrong ('+code+'). Please try again.');
+}
+function toast(msg,type='info'){
+  document.querySelector('.toast')?.remove();
+  const t=document.createElement('div');
+  t.className='toast '+type;t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3500);
+}
+function markErr(id,eid){$(id)?.classList.add('error');$(eid)?.classList.add('show');}
+function clearErr(id,eid){$(id)?.classList.remove('error');$(eid)?.classList.remove('show');}
+
+/* ── FIREBASE AUTH LISTENER ── */
+let adminUnsubs=[];
+auth.onAuthStateChanged(async user=>{
+  if(user){
+    try{
+      // 1. Check users collection
+      const uDoc=await db.collection('users').doc(user.uid).get();
+      if(uDoc.exists){
+        const d=uDoc.data();
+        state.user={uid:user.uid,email:user.email,name:d.name,phone:d.phone||'',isAdmin:false};
+        // Load their bookings
+        const bSnap=await db.collection('bookings').where('userId','==',user.uid).get();
+        state.bookings=bSnap.docs.map(d=>({...d.data(),_docId:d.id}));
+      } else {
+        // 2. Check admins collection
+        const aDoc=await db.collection('admins').doc(user.uid).get();
+        if(aDoc.exists){
+          const d=aDoc.data();
+          state.user={uid:user.uid,email:user.email,name:d.name,isAdmin:true,parkingLocationId:d.parkingLocationId};
+          subscribeAdminData(d.parkingLocationId);
+          if(state.page==='adminLogin'||state.page==='auth') state.page='admin';
+        } else {
+          // Profile missing — sign out
+          console.warn('Auth user has no profile doc. Signing out.');
+          await auth.signOut();
+          return;
+        }
+      }
+    }catch(e){
+      console.error('Auth state error:',e);
+      toast('Error: '+fbErr(e.code),'error');
+    }
+  } else {
+    adminUnsubs.forEach(f=>f()); adminUnsubs=[];
+    state.user=null; state.bookings=[]; state.adminBookings=[]; state.adminSlots=[];
+    if(state.page==='bookings'||state.page==='admin') state.page='home';
+  }
+  render();
+});
+
+function subscribeAdminData(locId){
+  adminUnsubs.forEach(f=>f()); adminUnsubs=[];
+  if(!locId) return;
+  adminUnsubs.push(
+    db.collection('bookings').where('parkingLocationId','==',locId).onSnapshot(s=>{
+      state.adminBookings=s.docs.map(d=>({...d.data(),_docId:d.id}));render();
+    }),
+    db.collection('slots').where('parkingLocationId','==',locId).onSnapshot(s=>{
+      state.adminSlots=s.docs.map(d=>({...d.data(),_docId:d.id}));render();
+    })
+  );
+}
+
+/* ── AUTH ACTIONS ── */
+window.doSignup=async function(){
+  const name=val('auth-name'),email=val('auth-email'),
+        phone=val('auth-phone'),pass=passVal('auth-pass');
+  let ok=true;
+  if(!V.name(name)) {markErr('auth-name','err-auth-name');ok=false;}
+  if(!V.email(email)){markErr('auth-email','err-auth-email');ok=false;}
+  if(!V.phone(phone)){markErr('auth-phone','err-auth-phone');ok=false;}
+  if(!V.pass(pass)) {markErr('auth-pass','err-auth-pass');ok=false;}
+  if(!ok){toast('Please fix the errors above','error');return;}
+  const btn=$('auth-btn');
+  if(btn){btn.disabled=true;btn.textContent='Creating account…';}
+  try{
+    const c=await auth.createUserWithEmailAndPassword(email,pass);
+    await db.collection('users').doc(c.user.uid).set({
+      name,email,phone,role:'user',createdAt:new Date().toISOString()
+    });
+    toast('Welcome, '+name.split(' ')[0]+'! 🎉','success');
+    state.page='home';
+  }catch(e){
+    toast(fbErr(e.code),'error');
+    if(btn){btn.disabled=false;btn.textContent='Create Account';}
+  }
+};
+
+window.doLogin=async function(){
+  const email=val('auth-email'),pass=passVal('auth-pass');
+  if(!email){markErr('auth-email','err-auth-email');return;}
+  if(!pass) {markErr('auth-pass','err-auth-pass');return;}
+  const btn=$('auth-btn');
+  if(btn){btn.disabled=true;btn.textContent='Logging in…';}
+  try{
+    await auth.signInWithEmailAndPassword(email,pass);
+    toast('Welcome back! 👋','success');
+    state.page='home';
+  }catch(e){
+    toast(fbErr(e.code),'error');
+    if(btn){btn.disabled=false;btn.textContent='Login';}
+  }
+};
+
+/* Admin-specific login — uses adm-* field IDs */
+window.doAdminLogin=async function(){
+  const email=val('adm-email'),pass=passVal('adm-pass');
+  if(!email||!pass){toast('Please enter email and password','error');return;}
+  const btn=$('adm-btn');
+  if(btn){btn.disabled=true;btn.textContent='Logging in…';}
+  try{
+    const c=await auth.signInWithEmailAndPassword(email,pass);
+    // Verify the user is actually an admin
+    const aDoc=await db.collection('admins').doc(c.user.uid).get();
+    if(!aDoc.exists){
+      await auth.signOut();
+      toast('This is not an admin account. Use the regular Login page.','error');
+      if(btn){btn.disabled=false;btn.textContent='Admin Login';}
+      return;
+    }
+    toast('Welcome, Admin! 👋','success');
+    // onAuthStateChanged will handle the rest
+  }catch(e){
+    toast(fbErr(e.code),'error');
+    if(btn){btn.disabled=false;btn.textContent='Admin Login';}
+  }
+};
+
+/* Admin signup — uses adm-* field IDs */
+window.doAdminSignup=async function(){
+  const name=val('adm-name'),email=val('adm-email'),
+        pass=passVal('adm-pass'),locId=val('adm-location');
+  if(!name||!email||!pass||!locId){toast('All fields are required','error');return;}
+  if(!V.pass(pass)){toast('Password must be at least 6 characters','error');return;}
+  const btn=$('adm-btn');
+  if(btn){btn.disabled=true;btn.textContent='Creating…';}
+  try{
+    const c=await auth.createUserWithEmailAndPassword(email,pass);
+    await db.collection('admins').doc(c.user.uid).set({
+      name,email,parkingLocationId:locId,role:'admin',createdAt:new Date().toISOString()
+    });
+    toast('Admin account created! 🎉','success');
+    // onAuthStateChanged will fire and redirect to admin dashboard
+  }catch(e){
+    toast(fbErr(e.code),'error');
+    if(btn){btn.disabled=false;btn.textContent='Create Admin Account';}
+  }
+};
+
+window.doLogout=async function(){
+  adminUnsubs.forEach(f=>f()); adminUnsubs=[];
+  await auth.signOut();
+  state.user=null;state.bookings=[];state.adminBookings=[];state.adminSlots=[];
+  state.adminViewingAsUser=false;
+  state.page='home';render();
+  toast('Logged out successfully.');
+};
+
+/* ── ADMIN → LOGIN AS USER ── */
+window.loginAsUser=function(){
+  state.adminViewingAsUser=true;
+  state.page='home';
+  render();
+  toast('Now browsing as user. Your bookings are visible.','info');
+};
+
+window.exitUserMode=function(){
+  state.adminViewingAsUser=false;
+  state.page='admin';
+  render();
+  toast('Back to Admin Dashboard.','success');
+};
+
+/* ── ADMIN SLOT ACTIONS ── */
+window.adminAddSlot=async function(){
+  if(!state.user?.isAdmin) return;
+  const num=parseInt($('slot-num')?.value)||0;
+  const type=$('slot-type')?.value||'standard';
+  if(num<1){toast('Enter a valid slot number','error');return;}
+  try{
+    await db.collection('slots').add({
+      slotNumber:num,type,
+      parkingLocationId:state.user.parkingLocationId,
+      status:'available',addedAt:new Date().toISOString()
+    });
+    toast('Slot #'+num+' added!','success');
+    if($('slot-num')) $('slot-num').value='';
+  }catch(e){toast('Error: '+fbErr(e.code),'error');}
+};
+
+window.adminDeleteSlot=async function(docId){
+  if(!confirm('Delete this slot?')) return;
+  try{await db.collection('slots').doc(docId).delete();toast('Slot deleted.','info');}
+  catch(e){toast('Error: '+fbErr(e.code),'error');}
+};
+
+window.adminToggleSlot=async function(docId,cur){
+  const next=cur==='available'?'full':'available';
+  try{await db.collection('slots').doc(docId).update({status:next});toast('Slot marked as '+next,'success');}
+  catch(e){toast('Error: '+fbErr(e.code),'error');}
+};
+
+/* ── BOOKING ── */
+window.processPayment=async function(pid,total){
+  const p=state.parkingData.find(x=>x.id===pid);
+  const bd=state.bookingData;
+  if(bd.date&&bd.time&&new Date(bd.date+'T'+bd.time)<=new Date()){
+    toast('Please select a future time.','error');state.modalStep=3;render();return;
+  }
+  if(bookedSlotsMap[pid]?.has(state.selectedSlot)){
+    toast('Slot just taken. Please choose another.','error');
+    state.modalStep=2;state.selectedSlot=null;render();return;
+  }
+  const btn=$('pay-btn');
+  if(btn){btn.innerHTML='<span class="spinner"></span> Processing...';btn.disabled=true;}
+
+  setTimeout(async()=>{
+    const id=genId(),locId='p'+pid;
+    bookedSlotsMap[pid].add(state.selectedSlot);
+    p.booked=Math.min(p.total,p.booked+1);
+    const bk={
+      id,parking:p.name,parkingId:pid,parkingLocationId:locId,
+      slot:state.selectedSlot,city:CITY_DB[state.city].name,
+      date:bd.date,time:bd.time,duration:bd.duration||1,total,
+      user:state.user?.email||'guest',userId:state.user?.uid||null,
+      name:bd.name,phone:bd.phone,email:bd.email||state.user?.email||'',
+      status:'Active',createdAt:new Date().toISOString()
+    };
+    state.bookings.push(bk);
+    state.confirmation={...bk};
+    state.modalStep=5;render();
+    toast('Booking confirmed! 🎉','success');
+    try{await db.collection('bookings').add(bk);}
+    catch(e){console.error('Firestore save error:',e);}
+  },1500);
+};
+
+window.cancelBooking=async function(bid,docId){
+  const b=state.bookings.find(x=>x.id===bid);
+  if(!b) return;
+  if(!canCancel(b)){toast('Cancellation not allowed within 1 hour of booking time.','error');return;}
+  if(!confirm('Cancel booking '+bid+'? This cannot be undone.')) return;
+  if(docId){
+    try{await db.collection('bookings').doc(docId).update({status:'Cancelled',cancelledAt:new Date().toISOString()});}
+    catch(e){toast('Error: '+fbErr(e.code),'error');return;}
+  }
+  b.status='Cancelled';
+  const pe=state.parkingData.find(x=>x.id===b.parkingId);
+  if(pe){pe.booked=Math.max(0,pe.booked-1);bookedSlotsMap[b.parkingId]?.delete(b.slot);}
+  render();toast('Booking cancelled.','info');
+};
+
+/* ── CITY ── */
+function loadCity(slug){
+  if(!CITY_DB[slug]) return;
+  state.city=slug;state.area='All';state.search='';
+  state.modal=null;state.modalStep=1;state.selectedSlot=null;
+  state.parkingData=JSON.parse(JSON.stringify(CITY_DB[slug].parking));
+  Object.keys(bookedSlotsMap).forEach(k=>delete bookedSlotsMap[k]);
+  state.parkingData.forEach(p=>{
+    const s=new Set();
+    for(let i=1;i<=p.booked&&i<=p.total;i++) s.add(i);
+    bookedSlotsMap[p.id]=s;
+  });
+  state.showCityDropdown=false;render();
+  toast('Switched to '+CITY_DB[slug].name+' 📍','success');
+}
+
+/* ── RENDER ── */
+function render(){
+  document.getElementById('app').innerHTML=
+    buildNav()+
+    (state.page==='home'       ?buildHome()      :'')+
+    (state.page==='bookings'   ?buildBookings()  :'')+
+    (state.page==='admin'      ?buildAdmin()     :'')+
+    (state.page==='adminLogin' ?buildAdminLogin():'')+
+    (state.page==='auth'       ?buildAuth()      :'')+
+    (state.page==='contact'    ?buildContact()   :'')+
+    (state.modal               ?buildModal()     :'');
+}
+
+function buildNav(){
+  const isAdminAsUser = state.user?.isAdmin && state.adminViewingAsUser;
+  return`<nav>
+    <div class="logo"><div class="logo-icon">P</div>Parkit</div>
+    <div class="nav-tabs">
+      <button class="nav-tab ${state.page==='home'?'active':''}" onclick="goPage('home')">Find Parking</button>
+      ${(state.user && (!state.user.isAdmin || isAdminAsUser)) ? `<button class="nav-tab ${state.page==='bookings'?'active':''}" onclick="goPage('bookings')">My Bookings</button>` : ''}
+      ${state.user?.isAdmin && !isAdminAsUser ?`<button class="nav-tab ${state.page==='admin'?'active':''}" onclick="goPage('admin')">Admin Dashboard</button>`:''}
+      <button class="nav-tab ${state.page==='contact'?'active':''}" onclick="goPage('contact')">Contact Us</button>
+    </div>
+    <div class="nav-actions">
+      ${state.user?`
+        ${state.user.isAdmin && !isAdminAsUser ? '<span class="admin-badge">⚙️ Admin</span>' : ''}
+        ${isAdminAsUser ? '<span style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#e0f2fe,#bae6fd);color:#0369a1;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;border:1px solid #7dd3fc">👤 User Mode</span>' : ''}
+        <span style="font-size:13px;color:var(--muted)">Hi, ${state.user.name.split(' ')[0]} 👋</span>
+        ${isAdminAsUser ? `<button class="btn btn-sm" style="background:#fff3cd;color:#92400e;border:1px solid #ffc107" onclick="exitUserMode()">⚙️ Back to Admin</button>` : ''}
+        <button class="btn btn-outline btn-sm" onclick="doLogout()">Logout</button>
+      `:`
+        <button class="btn btn-outline btn-sm" onclick="goPage('auth')">Login</button>
+        <button class="btn btn-primary btn-sm" onclick="state.authMode='signup';goPage('auth')">Sign Up</button>
+        <button class="btn btn-sm" style="background:#fff3cd;color:#92400e;border:1px solid #ffc107" onclick="goPage('adminLogin')">⚙️ Admin</button>
+      `}
+    </div>
+  </nav>`;
+}
+
+function buildHome(){
+  const city=CITY_DB[state.city],areas=city.areas;
+  const filtered=state.parkingData.filter(p=>{
+    const am=state.area==='All'||p.area===state.area;
+    const sm=!state.search||p.name.toLowerCase().includes(state.search.toLowerCase())||p.area.toLowerCase().includes(state.search.toLowerCase());
+    return am&&sm;
+  });
+  const ts=state.parkingData.reduce((a,p)=>a+p.total,0);
+  const av=state.parkingData.reduce((a,p)=>a+getAvail(p),0);
+  const bk=state.parkingData.reduce((a,p)=>a+p.booked,0);
+  const fc=Object.keys(CITY_DB).filter(k=>CITY_DB[k].name.toLowerCase().includes((state.citySearch||'').toLowerCase()));
+
+  return`
+    <div class="hero">
+      <div class="hero-city-wrapper">
+        <div class="city-selector-bar" onclick="toggleCityDropdown()">
+          <span>${city.emoji}</span>
+          <span style="font-size:12px;opacity:.75">Showing parking in</span>
+          <span style="font-size:14px;font-weight:700">${city.name}</span>
+          <span>${state.showCityDropdown?'▲':'▼'}</span>
+        </div>
+        ${state.showCityDropdown?`
+        <div class="city-dropdown-panel">
+          <input class="city-dropdown-search" placeholder="🔍 Search city..." value="${state.citySearch||''}" oninput="updateCitySearch(this.value)" autofocus>
+          <div class="city-dropdown-grid">
+            ${fc.map(k=>`<div class="city-option ${state.city===k?'selected':''}" onclick="switchCity('${k}')"><span>${CITY_DB[k].emoji}</span><span>${CITY_DB[k].name}</span><span style="font-size:10px;opacity:.6;margin-left:auto">${CITY_DB[k].pop}</span></div>`).join('')}
+          </div>
+        </div>`:''}
+      </div>
+      <h1>🅿️ Smart Parking in <span class="hero-city-name">${city.name}</span></h1>
+      <p>${city.tagline} — Find, book and pay instantly</p>
+      <div class="search-bar">
+        <span style="padding:8px 8px 8px 16px;font-size:16px">🔍</span>
+        <input placeholder="Search by name or area..." value="${state.search}" oninput="searchChange(this.value)">
+        <select onchange="areaChange(this.value)">
+          ${areas.map(a=>`<option value="${a}" ${state.area===a?'selected':''}>${a}</option>`).join('')}
+        </select>
+        <button class="btn btn-primary" style="margin:4px">Search</button>
+      </div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat-item"><div style="display:inline-flex;align-items:center;gap:4px;background:var(--blue-light);color:var(--blue-dark);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;margin-bottom:.4rem">${city.emoji} ${city.name}</div><div class="stat-num">${state.parkingData.length}</div><div class="stat-label">Locations</div></div>
+      <div class="stat-item"><div class="stat-num">${ts.toLocaleString()}</div><div class="stat-label">Total Slots</div></div>
+      <div class="stat-item"><div class="stat-num" style="color:var(--success)">${av.toLocaleString()}</div><div class="stat-label">Available</div></div>
+      <div class="stat-item"><div class="stat-num" style="color:var(--danger)">${bk.toLocaleString()}</div><div class="stat-label">Occupied</div></div>
+    </div>
+    <div class="area-chips">${areas.map(a=>`<div class="chip ${state.area===a?'active':''}" onclick="areaChange('${a}')">${a}</div>`).join('')}</div>
+    <div class="section">
+      <div class="section-title">${filtered.length} Location${filtered.length!==1?'s':''} in ${city.name}</div>
+      ${filtered.length===0?'<div class="empty"><div class="empty-icon">🔍</div><p>No parking found.</p></div>':''}
+      <div class="parking-grid">${filtered.map(p=>buildCard(p)).join('')}</div>
+    </div>`;
+}
+
+function buildCard(p){
+  const a=getAvail(p),st=getStatus(p),pct=Math.round(p.booked/p.total*100);
+  return`<div class="parking-card" onclick="openModal(${p.id})">
+    <div class="card-img">${p.emoji}<span class="card-badge ${st.cls}">${st.label}</span></div>
+    <div class="card-body">
+      <div class="card-name">${p.name}</div>
+      <div class="card-area">📍 ${p.area} · ${p.address.substring(0,35)}...</div>
+      <div class="slot-bar"><div class="slot-fill" style="width:${pct}%"></div></div>
+      <div class="slot-info"><span style="color:var(--success)">✓ ${a} available</span><span>${pct}% filled</span></div>
+      <div class="card-meta" style="margin-top:8px">
+        <span class="card-price">${fmtINR(p.price)}/hr</span>
+        <span style="font-size:11px;color:var(--muted)">⭐ ${p.rating} · ${p.total} slots</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildModal(){
+  const p=state.parkingData.find(x=>x.id===state.modal);
+  if(!p) return '';
+  const slots=genSlots(p),avail=getAvail(p),bd=state.bookingData;
+  const h=bd.duration||1,amt=p.price*h,gst=Math.round(amt*.18),total=amt+gst+5;
+  const s=state.modalStep;
+  return`<div class="modal-overlay" onclick="closeModalOverlay(event)">
+  <div class="modal">
+    <div class="modal-header"><h3>${p.name}</h3><button class="close-btn" onclick="closeModal()">✕</button></div>
+    <div class="modal-body">
+      ${s<5?`<div class="step-indicator">
+        ${['Details','Slot','Info','Pay','Done'].map((st,i)=>`
+          <div class="step ${i+1<s?'done':i+1===s?'active':'pending'}">
+            <div class="step-num">${i+1<s?'✓':i+1}</div><span style="font-size:10px">${st}</span>
+          </div>${i<4?`<div class="step-line ${i+1<s?'done':''}"></div>`:''}`).join('')}
+      </div>`:''}
+
+      ${s===1?`
+        <div class="detail-hero"><div style="font-size:2.5rem">${p.emoji}</div><h2>${p.name}</h2><p>📍 ${p.address}</p><p style="margin-top:4px">⭐ ${p.rating} · ${fmtINR(p.price)}/hr</p></div>
+        <div class="detail-stats">
+          <div class="dstat"><div class="dstat-val green">${avail}</div><div class="dstat-lbl">Available</div></div>
+          <div class="dstat"><div class="dstat-val red">${p.booked}</div><div class="dstat-lbl">Occupied</div></div>
+          <div class="dstat"><div class="dstat-val blue">${p.total}</div><div class="dstat-lbl">Total</div></div>
+        </div>
+        ${avail===0?`<div style="background:#fee2e2;border-radius:10px;padding:1rem;text-align:center;color:#991b1b;font-weight:600">⚠️ This parking is full</div>`:
+        !state.user?`<div style="background:#fff3cd;border-radius:10px;padding:1rem;text-align:center;font-size:13px;color:#92400e">
+          Please <a href="#" onclick="event.preventDefault();closeModal();goPage('auth')">login</a> to book a slot.</div>`:
+        `<button class="btn btn-primary" style="width:100%;padding:12px" onclick="nextStep()">Book Now →</button>`}
+      `:''}
+
+      ${s===2?(()=>{
+        const sg=slotSz(p.total),ac=slots.filter(x=>!x.booked).length;
+        return`
+        <div style="display:flex;justify-content:space-between;background:var(--bg);border-radius:10px;padding:8px 14px;margin-bottom:10px;font-size:12px">
+          <span>🅿️ <b>${p.total}</b> total</span><span style="color:var(--success)">✓ <b>${ac}</b> free</span><span style="color:var(--danger)">✗ <b>${p.booked}</b> taken</span>
+        </div>
+        <div style="display:flex;gap:14px;margin-bottom:8px;font-size:12px">
+          <span><span class="legend-dot" style="background:#f0fdf4;border-color:#22c55e"></span> Free</span>
+          <span><span class="legend-dot" style="background:var(--blue-light);border-color:var(--blue-dark)"></span> Taken</span>
+          <span><span class="legend-dot" style="background:var(--blue-dark);border-color:var(--blue-dark)"></span> Selected</span>
+        </div>
+        <div style="max-height:300px;overflow-y:auto;border:1.5px solid var(--border);border-radius:12px;padding:10px">
+          <div style="display:grid;grid-template-columns:repeat(${sg.cols},${sg.size});gap:4px">
+            ${slots.map(sl=>{
+              const sel=state.selectedSlot===sl.id;
+              const cls=sl.booked?'booked':sel?'selected':'available';
+              const oc=sl.booked?'':'onclick="selectSlot('+sl.id+')"';
+              return`<div class="slot-box ${cls}" style="width:${sg.size};height:${sg.size};font-size:${sg.font}" ${oc}>${sl.id}</div>`;
+            }).join('')}
+          </div>
+        </div>
+        ${state.selectedSlot?`<div style="background:#f0fdf4;border:1px solid #22c55e;border-radius:8px;padding:8px 14px;margin:10px 0;font-size:13px;color:#166534;font-weight:600">✅ Slot <b>#${state.selectedSlot}</b> selected</div>`:
+        `<div style="font-size:12px;color:var(--muted);margin-top:8px;text-align:center">Tap a green slot to select</div>`}
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn btn-outline" style="flex:1" onclick="prevStep()">← Back</button>
+          <button class="btn btn-primary" style="flex:2" onclick="nextStep()" ${!state.selectedSlot?'disabled':''}>Continue →</button>
+        </div>`;
+      })():''}
+
+      ${s===3?`
+        <div class="form-group"><label class="form-label">Full Name *</label>
+          <input class="form-input" id="bk-name" placeholder="Your full name" value="${bd.name}" oninput="updateBooking('name',this.value);clearErr('bk-name','err-bk-name')">
+          <div class="field-error" id="err-bk-name">Min. 2 characters</div></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Phone *</label>
+            <input class="form-input" id="bk-phone" placeholder="10-digit mobile" maxlength="10" value="${bd.phone}" oninput="updateBooking('phone',this.value);clearErr('bk-phone','err-bk-phone')">
+            <div class="field-error" id="err-bk-phone">Valid 10-digit phone</div></div>
+          <div class="form-group"><label class="form-label">Email</label>
+            <input class="form-input" type="email" placeholder="Email" value="${bd.email}" oninput="updateBooking('email',this.value)"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Date *</label>
+            <input class="form-input" id="bk-date" type="date" value="${bd.date}" min="${new Date().toISOString().split('T')[0]}" oninput="updateBooking('date',this.value);clearErr('bk-date','err-bk-date')">
+            <div class="field-error" id="err-bk-date">Please select a date</div></div>
+          <div class="form-group"><label class="form-label">Time *</label>
+            <input class="form-input" id="bk-time" type="time" value="${bd.time}" oninput="updateBooking('time',this.value);clearErr('bk-time','err-bk-time')">
+            <div class="field-error" id="err-bk-time">Please select a time</div></div>
+        </div>
+        <div class="form-group"><label class="form-label">Duration</label>
+          <select class="form-input" onchange="updateBooking('duration',parseInt(this.value))">
+            ${[1,2,3,4,6,8,12,24].map(h=>`<option value="${h}" ${bd.duration===h?'selected':''}>${h} hour${h>1?'s':''}</option>`).join('')}
+          </select></div>
+        <div style="display:flex;gap:8px;margin-top:1rem">
+          <button class="btn btn-outline" style="flex:1" onclick="prevStep()">← Back</button>
+          <button class="btn btn-primary" style="flex:2" onclick="validateStep3()">Review →</button>
+        </div>
+      `:''}
+
+      ${s===4?`
+        <div class="payment-summary">
+          <div class="pay-row"><span>Parking</span><span>${p.name}</span></div>
+          <div class="pay-row"><span>Slot</span><span>#${state.selectedSlot}</span></div>
+          <div class="pay-row"><span>Name</span><span>${bd.name}</span></div>
+          <div class="pay-row"><span>Phone</span><span>${bd.phone}</span></div>
+          <div class="pay-row"><span>Date & Time</span><span>${bd.date} ${bd.time}</span></div>
+          <div class="pay-row"><span>Duration</span><span>${h}hr</span></div>
+          <div class="pay-row"><span>Subtotal</span><span>${fmtINR(amt)}</span></div>
+          <div class="pay-row"><span>GST 18%</span><span>${fmtINR(gst)}</span></div>
+          <div class="pay-row"><span>Platform fee</span><span>₹5</span></div>
+          <div class="pay-row pay-total"><span>Total</span><span>${fmtINR(total)}</span></div>
+        </div>
+        <button class="btn btn-outline" style="width:100%;margin-bottom:8px" onclick="prevStep()">← Back</button>
+        <button class="razorpay-btn" id="pay-btn" onclick="processPayment(${p.id},${total})">🔒 Pay ${fmtINR(total)} Securely</button>
+        <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:8px">UPI · Cards · Net Banking</div>
+      `:''}
+
+      ${s===5&&state.confirmation?(()=>{
+        const c=state.confirmation;
+        return`<div class="success-screen">
+          <div class="success-icon">✅</div>
+          <h3 style="font-size:1.2rem;margin-bottom:4px">Booking Confirmed!</h3>
+          <div class="ticket">
+            <div class="ticket-row"><span>Booking ID</span><span style="font-family:monospace">${c.id}</span></div>
+            <div class="ticket-row"><span>Parking</span><span>${p.name}</span></div>
+            <div class="ticket-row"><span>Slot</span><span>#${state.selectedSlot}</span></div>
+            <div class="ticket-row"><span>Name</span><span>${c.name}</span></div>
+            <div class="ticket-row"><span>Phone</span><span>${c.phone}</span></div>
+            <div class="ticket-row"><span>Date & Time</span><span>${c.date} ${c.time}</span></div>
+            <div class="ticket-row"><span>Duration</span><span>${c.duration}hr</span></div>
+            <div class="ticket-row"><span>Total Paid</span><span style="color:var(--success)">${fmtINR(c.total)}</span></div>
+            <div class="ticket-id">🎫 ${c.id}</div>
+          </div>
+          <div class="cancel-warning">⏰ Cancellation allowed only up to 1 hour before booking time.</div>
+          <button class="btn btn-primary" style="width:100%;margin-top:1rem" onclick="closeModal();goPage('bookings')">View My Bookings</button>
+          <button class="btn btn-outline" style="width:100%;margin-top:8px" onclick="closeModal()">Find More Parking</button>
+        </div>`;
+      })():''}
+    </div>
+  </div>
+  </div>`;
+}
+
+function buildBookings(){
+  if(!state.user) return`<div class="section"><div class="empty"><div class="empty-icon">🔐</div><p>Please login to view your bookings.</p><button class="btn btn-primary" style="margin-top:1rem" onclick="goPage('auth')">Login</button></div></div>`;
+  const bks=state.bookings;
+  return`<div class="section">
+    <div class="section-title">My Bookings (${bks.length})</div>
+    ${bks.length===0?`<div class="empty"><div class="empty-icon">📋</div><p>No bookings yet.</p><button class="btn btn-primary" style="margin-top:1rem" onclick="goPage('home')">Browse Parking</button></div>`:''}
+    ${bks.map(b=>{
+      const ok=canCancel(b);
+      return`<div class="history-item">
+        <div>
+          <div class="history-name">${b.parking}</div>
+          <div class="history-sub">Slot #${b.slot} · ${b.date} ${b.time} · ${b.duration}hr · 📍${b.city||'UP'}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px">ID: <code>${b.id}</code> · ${b.name} · ${b.phone}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="history-price">${fmtINR(b.total)}</div>
+          <span class="status-badge ${b.status==='Active'?'status-active':'status-cancelled'}">${b.status}</span>
+          ${b.status==='Active'?(ok?`<br><button class="btn btn-danger btn-sm" style="margin-top:6px" onclick="cancelBooking('${b.id}','${b._docId||''}')">Cancel</button>`:
+          `<div style="font-size:10px;color:var(--danger);margin-top:6px;max-width:120px">🚫 Cannot cancel within 1hr</div>`):''}
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function buildAdminLogin(){
+  const isLogin=state.adminAuthMode==='login';
+  return`<div class="auth-card">
+    <div class="auth-inner">
+      <div style="text-align:center;margin-bottom:1.5rem">
+        <div style="font-size:2.5rem">⚙️</div>
+        <h2 style="margin-top:.5rem">Parking Manager Portal</h2>
+        <p style="font-size:13px;color:var(--muted)">Admin access only</p>
+      </div>
+      <div class="auth-tabs">
+        <button class="auth-tab ${isLogin?'active':''}" onclick="state.adminAuthMode='login';render()">Login</button>
+        <button class="auth-tab ${!isLogin?'active':''}" onclick="state.adminAuthMode='signup';render()">New Admin</button>
+      </div>
+      ${!isLogin?`<div class="form-group"><label class="form-label">Full Name *</label><input class="form-input" id="adm-name" placeholder="Manager name"></div>`:''}
+      <div class="form-group"><label class="form-label">Email *</label><input class="form-input" id="adm-email" type="email" placeholder="admin@parkit.in"></div>
+      <div class="form-group"><label class="form-label">Password *</label><input class="form-input" id="adm-pass" type="password" placeholder="Min. 6 characters"></div>
+      ${!isLogin?`<div class="form-group"><label class="form-label">Your Parking Location *</label>
+        <select class="form-input" id="adm-location">
+          <option value="">— Select your parking location —</option>
+          ${PARKING_LOCATIONS.map(l=>`<option value="${l.id}">${l.name}</option>`).join('')}
+        </select></div>`:''}
+      <button class="btn btn-primary" id="adm-btn" style="width:100%;padding:12px;margin-top:.5rem"
+        onclick="${isLogin?'doAdminLogin()':'doAdminSignup()'}">
+        ${isLogin?'Admin Login':'Create Admin Account'}
+      </button>
+      <div style="text-align:center;margin-top:1rem;font-size:12px;color:var(--muted)">
+        Regular user? <a href="#" onclick="event.preventDefault();goPage('auth')">Login here →</a>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildAuth(){
+  const isLogin=state.authMode==='login';
+  return`<div class="auth-card">
+    <div class="auth-inner">
+      <div style="text-align:center;margin-bottom:1.5rem">
+        <div class="logo-icon" style="margin:0 auto .75rem;width:44px;height:44px;font-size:20px">P</div>
+        <h2>${isLogin?'Welcome back':'Create account'}</h2>
+        <p style="font-size:13px;color:var(--muted)">Smart Parking · Uttar Pradesh</p>
+      </div>
+      <div class="auth-tabs">
+        <button class="auth-tab ${isLogin?'active':''}" onclick="setAuthMode('login')">Login</button>
+        <button class="auth-tab ${!isLogin?'active':''}" onclick="setAuthMode('signup')">Sign Up</button>
+      </div>
+      ${!isLogin?`<div class="form-group"><label class="form-label">Full Name *</label><input class="form-input" id="auth-name" placeholder="Your full name"><div class="field-error" id="err-auth-name">Min. 2 characters</div></div>`:''}
+      <div class="form-group"><label class="form-label">Email *</label><input class="form-input" id="auth-email" type="email" placeholder="you@example.com"><div class="field-error" id="err-auth-email">Valid email required</div></div>
+      ${!isLogin?`<div class="form-group"><label class="form-label">Phone *</label><input class="form-input" id="auth-phone" placeholder="10-digit mobile" maxlength="10"><div class="field-error" id="err-auth-phone">Valid 10-digit phone</div></div>`:''}
+      <div class="form-group"><label class="form-label">Password *</label><input class="form-input" id="auth-pass" type="password" placeholder="Min. 6 characters"><div class="field-error" id="err-auth-pass">Min. 6 characters</div></div>
+      <button class="btn btn-primary" id="auth-btn" style="width:100%;padding:12px;margin-top:.5rem" onclick="${isLogin?'doLogin()':'doSignup()'}">
+        ${isLogin?'Login':'Create Account'}
+      </button>
+      <div style="text-align:center;margin-top:1rem;font-size:12px;color:var(--muted)">
+        Parking manager? <a href="#" onclick="event.preventDefault();goPage('adminLogin')">Admin login →</a>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildAdmin(){
+  if(!state.user?.isAdmin) return`<div class="section"><div class="empty"><div class="empty-icon">🔐</div><p>Admin access required.</p><button class="btn btn-primary" style="margin-top:1rem" onclick="goPage('adminLogin')">Admin Login</button></div></div>`;
+  const loc=PARKING_LOCATIONS.find(l=>l.id===state.user.parkingLocationId);
+  const bks=state.adminBookings,slts=state.adminSlots;
+  const aBks=bks.filter(b=>b.status==='Active');
+  const rev=aBks.reduce((a,b)=>a+(b.total||0),0);
+
+  return`<div class="admin-page">
+    <div class="admin-header">
+      <div>
+        <div class="admin-title">⚙️ Admin Dashboard</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:4px">📍 ${loc?.name||state.user.parkingLocationId}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-sm" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd);color:#0369a1;border:1px solid #7dd3fc;font-weight:700" onclick="loginAsUser()">👤 Login as User</button>
+        <div class="admin-tabs">
+          <button class="admin-tab ${state.adminTab==='overview'?'active':''}" onclick="setAdminTab('overview')">Overview</button>
+          <button class="admin-tab ${state.adminTab==='bookings'?'active':''}" onclick="setAdminTab('bookings')">All Bookings</button>
+        </div>
+      </div>
+    </div>
+
+    ${state.adminTab==='overview'?`
+      <div class="admin-stats-grid">
+        <div class="admin-stat-card"><div class="admin-stat-val">${bks.length}</div><div class="admin-stat-lbl">Total Bookings</div></div>
+        <div class="admin-stat-card"><div class="admin-stat-val" style="color:var(--success)">${aBks.length}</div><div class="admin-stat-lbl">Active Bookings</div></div>
+        <div class="admin-stat-card"><div class="admin-stat-val" style="color:var(--blue-dark)">${fmtINR(rev)}</div><div class="admin-stat-lbl">Revenue</div></div>
+      </div>
+      <div style="background:var(--white);border-radius:14px;border:1.5px solid var(--border);overflow:hidden">
+        <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border);font-weight:700">Recent Bookings (${bks.length})</div>
+        ${bks.length===0?'<div class="empty"><div class="empty-icon">📊</div><p>No bookings yet for this location.</p></div>':`
+        <div style="overflow-x:auto"><table class="bookings-table">
+          <thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Slot</th><th>Date/Time</th><th>Amount</th><th>Status</th></tr></thead>
+          <tbody>${bks.slice(0,15).map(b=>`<tr>
+            <td><code style="font-size:10px">${b.id}</code></td>
+            <td>${b.name||'—'}</td><td>${b.phone||'—'}</td>
+            <td>#${b.slot}</td><td>${b.date} ${b.time}</td>
+            <td>${fmtINR(b.total||0)}</td>
+            <td><span class="status-badge ${b.status==='Active'?'status-active':'status-cancelled'}">${b.status}</span></td>
+          </tr>`).join('')}</tbody>
+        </table></div>`}
+      </div>
+    `:''}
+
+    ${state.adminTab==='bookings'?`
+      <div style="background:var(--white);border-radius:14px;border:1.5px solid var(--border);overflow:hidden">
+        <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border);font-weight:700">All Bookings (${bks.length})</div>
+        ${bks.length===0?'<div class="empty"><div class="empty-icon">📋</div><p>No bookings yet.</p></div>':`
+        <div style="overflow-x:auto"><table class="bookings-table">
+          <thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Email</th><th>Slot</th><th>Date</th><th>Time</th><th>Dur</th><th>Amount</th><th>Status</th></tr></thead>
+          <tbody>${bks.map(b=>`<tr>
+            <td><code style="font-size:10px">${b.id}</code></td>
+            <td>${b.name||'—'}</td><td>${b.phone||'—'}</td>
+            <td style="font-size:11px">${b.email||b.user||'—'}</td>
+            <td>#${b.slot}</td><td>${b.date}</td><td>${b.time}</td>
+            <td>${b.duration}hr</td><td>${fmtINR(b.total||0)}</td>
+            <td><span class="status-badge ${b.status==='Active'?'status-active':'status-cancelled'}">${b.status}</span></td>
+          </tr>`).join('')}</tbody>
+        </table></div>`}
+      </div>
+    `:''}
+  </div>`;
+}
+
+/* ── CONTACT PAGE ── */
+function buildContact(){
+  return`<div class="contact-page">
+    <div class="contact-hero">
+      <div style="font-size:2.5rem;margin-bottom:.5rem">📞</div>
+      <h2>Contact Us</h2>
+      <p>We're here to help! Reach out to us anytime for support, queries, or feedback about Parkit.</p>
+    </div>
+
+    <div class="contact-cards">
+      <div class="contact-card">
+        <div class="contact-card-icon">📧</div>
+        <div class="contact-card-title">Email Us</div>
+        <div class="contact-card-value"><a href="mailto:drashtisingh65@gmail.com">drashtisingh65@gmail.com</a></div>
+        <div class="contact-card-note">We reply within 24 hours</div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-card-icon">📱</div>
+        <div class="contact-card-title">Call / WhatsApp</div>
+        <div class="contact-card-value"><a href="tel:9277069770">+91 92770 69770</a></div>
+        <div class="contact-card-note">Mon – Sat, 9 AM – 7 PM</div>
+      </div>
+    </div>
+
+    <div class="contact-form-box">
+      <h3>✉️ Send us a Message</h3>
+      <div class="form-group">
+        <label class="form-label">Your Name</label>
+        <input class="form-input" id="ct-name" type="text" placeholder="Enter your name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-input" id="ct-email" type="email" placeholder="Enter your email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone Number (optional)</label>
+        <input class="form-input" id="ct-phone" type="tel" placeholder="Enter your phone number">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea id="ct-msg" placeholder="Describe your issue or query here…"></textarea>
+      </div>
+      <button class="btn btn-primary" style="width:100%;padding:12px;font-size:15px" onclick="submitContact()">📨 Send Message</button>
+      <div class="contact-info-note">
+        💡 <strong>Quick tip:</strong> For booking-related issues, please include your Booking ID in the message so we can assist you faster.
+      </div>
+    </div>
+  </div>`;
+}
+
+window.submitContact=async function(){
+  const name=document.getElementById('ct-name')?.value.trim();
+  const email=document.getElementById('ct-email')?.value.trim();
+  const phone=document.getElementById('ct-phone')?.value.trim();
+  const msg=document.getElementById('ct-msg')?.value.trim();
+  if(!name||!email||!msg){toast('Please fill in your name, email and message.','error');return;}
+  if(!V.email(email)){toast('Please enter a valid email address.','error');return;}
+  const btn=document.querySelector('.contact-form-box .btn-primary');
+  if(btn){btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Sending...';}
+  try{
+    await emailjs.send('service_0iswtrf','template_ybgfsxb',{
+      from_name:name,
+      from_email:email,
+      phone:phone||'Not provided',
+      message:msg
+    });
+    toast('Message sent! We\'ll get back to you soon. 😊','success');
+    document.getElementById('ct-name').value='';
+    document.getElementById('ct-email').value='';
+    document.getElementById('ct-phone').value='';
+    document.getElementById('ct-msg').value='';
+  }catch(e){
+    console.error('EmailJS error:',e);
+    const reason=e?.text||e?.message||JSON.stringify(e)||'Unknown error';
+    toast('Error: '+reason,'error');
+  }finally{
+    if(btn){btn.disabled=false;btn.innerHTML='📨 Send Message';}
+  }
+};
+
+/* ── STEP 3 VALIDATION ── */
+window.validateStep3=function(){
+  const bd=state.bookingData;let ok=true;
+  if(!V.name(bd.name)) {markErr('bk-name','err-bk-name');ok=false;}
+  if(!V.phone(bd.phone)){markErr('bk-phone','err-bk-phone');ok=false;}
+  if(!bd.date){markErr('bk-date','err-bk-date');ok=false;}
+  if(!bd.time){markErr('bk-time','err-bk-time');ok=false;}
+  if(bd.date&&bd.time&&new Date(bd.date+'T'+bd.time)<=new Date()){
+    markErr('bk-time','err-bk-time');toast('Please select a future time slot.','error');ok=false;
+  }
+  if(!ok){toast('Please fill all required fields.','error');return;}
+  nextStep();
+};
+
+/* ── GLOBAL ACTIONS ── */
+window.switchCity        =slug=>loadCity(slug);
+window.toggleCityDropdown=()=>{state.showCityDropdown=!state.showCityDropdown;state.citySearch='';render();};
+window.updateCitySearch  =v=>{state.citySearch=v;render();};
+window.goPage            =p=>{state.page=p;state.modal=null;state.showCityDropdown=false;render();};
+window.areaChange        =a=>{state.area=a;render();};
+window.searchChange      =v=>{state.search=v;render();};
+window.openModal         =id=>{
+  if(!state.user){toast('Please login to book.','error');state.page='auth';render();return;}
+  if(state.user.isAdmin && !state.adminViewingAsUser){toast('Switch to User Mode to book a slot.','info');return;}
+  state.modal=id;state.modalStep=1;state.selectedSlot=null;state.confirmation=null;render();
+};
+window.closeModal        =()=>{state.modal=null;state.modalStep=1;state.selectedSlot=null;state.bookingData={name:'',phone:'',email:'',date:'',time:'',duration:1};render();};
+window.closeModalOverlay =e=>{if(e.target.classList.contains('modal-overlay'))closeModal();};
+window.nextStep          =()=>{state.modalStep++;render();};
+window.prevStep          =()=>{state.modalStep--;render();};
+window.selectSlot        =id=>{state.selectedSlot=id;render();};
+window.updateBooking     =(k,v)=>{state.bookingData[k]=v;};
+window.setAuthMode       =m=>{state.authMode=m;render();};
+window.setAdminTab       =t=>{state.adminTab=t;render();};
+
+document.addEventListener('click',e=>{
+  if(state.showCityDropdown&&!e.target.closest('.hero-city-wrapper')){
+    state.showCityDropdown=false;render();
+  }
+},true);
+</script>
+</body>
+</html>
